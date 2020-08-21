@@ -55,6 +55,10 @@ def get_sign(diff):
 def compare(baseline, experiment):
     assert(baseline.columns == experiment.columns)
 
+    if abs(baseline.shape[0] - experiment.shape[0]) / baseline.shape[0] > 0.1:
+        print("The two datasets have mismatched sizes, rerun experiments to get comparable data")
+        return
+
     for column in baseline.columns:
         baseline_value = baseline[column].mean()
         diff = baseline_value - experiment[column].mean()
