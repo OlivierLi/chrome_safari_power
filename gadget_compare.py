@@ -44,7 +44,7 @@ def load_dir(dir_path):
         # Not the most efficient thing. Change to concat if this is getting slow.
         agg_data = agg_data.append({cumulative_energy_column_name: cumulative_package_energy}, ignore_index = True)
    
-    return agg_data
+    return clean(agg_data)
 
 def get_sign(diff):
     if diff < 0:
@@ -52,9 +52,24 @@ def get_sign(diff):
     else:
         return '+'
 
-def compare(baseline, experiment):
-    assert(baseline.columns == experiment.columns)
+# Check data for major outliers and remove them.
+def clean(df):
 
+    # If ever more than one column is included then the means have to be calculated before pruning and z score needs to be done per column
+    # https://stackoverflow.com/a/24762240
+    assert(df.shape[1] == 1)
+
+    df['z_score'] = df.apply(lambda x: (x - x.mean())/x.std())
+    df[abs(df['z_score']) > 3]
+    
+    return df.drop(columns=['z_score'])    
+
+
+def compare(baseline, experiment):
+    assert(baseline.columns.equals(experiment.columns))
+
+    # In relation to the size of the baseline dataset.
+    acceptable_experiment_size_difference = 0.1
     if abs(baseline.shape[0] - experiment.shape[0]) / baseline.shape[0] > 0.1:
         print("The two datasets have mismatched sizes, rerun experiments to get comparable data")
         return
