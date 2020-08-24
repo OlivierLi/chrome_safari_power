@@ -47,10 +47,11 @@ def load_dir(dir_path):
     return clean(agg_data)
 
 def get_sign(diff):
-    if diff < 0:
-        return '-'
-    else:
+    if diff > 0:
         return '+'
+    else:
+        # Minus sign added by str()
+        return ''
 
 # Check data for major outliers and remove them.
 def clean(df):
@@ -76,8 +77,13 @@ def compare(baseline, experiment):
 
     for column in baseline.columns:
         baseline_value = baseline[column].mean()
-        diff = baseline_value - experiment[column].mean()
-        print("Change in avg {}: {}{:0.2f} ({:0.2f}%)".format(column, get_sign(diff), diff, diff/baseline_value)) 
+        experiment_value = experiment[column].mean() 
+        diff = experiment_value - baseline_value 
+        percent_change = 100*diff/baseline_value 
+
+        print("Baseline avg {}: {:0.2f}".format(column, baseline_value)) 
+        print("Experiment avg {}: {:0.2f}".format(column, experiment_value)) 
+        print("Change in avg {}: {}{:0.2f} ({:0.2f}%)".format(column, get_sign(diff), diff, percent_change)) 
 
 def main():
     parser = argparse.ArgumentParser(description="Use gadget_compare to compare two runs of intel power gadget.")
