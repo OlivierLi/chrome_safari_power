@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-set -eux
+set -eu
 
 # Parameters
 SITES="polygon.com"

@@ -1,22 +1,25 @@
 #! /bin/zsh
 
-set -eux
+set -eu
 
 POWERLOG=/Applications/Intel\ Power\ Gadget/Powerlog
 OUTPUT_DIR=/Users/olivier/Documents/
 
-BASELINE_BIN=~/git/chromium/src/out/Baseline/Chromium.app/Contents/MacOS/Chromium 
+# This script uses the open command which needs the path to the .app
+CHROMIUM_APP=/Users/olivier/git/chromium/src/out/Baseline/Chromium.app
 
-killall -9 "Google Chrome" || true
+# Kill all browsers just to be sure.
+killall -9 "Chromium" || true
 killall -9 "Safari" || true
 
-open -a "Google Chrome"
+open $CHROMIUM_APP 
 sleep 10 
 $POWERLOG -resolution 5 -file $OUTPUT_DIR/chrome_navigation.csv -cmd osascript ./chrome_navigation.scpt;
-killall "Google Chrome" || true
+# If kill fail abort. It means the browser quit itself.
+killall "Chromium"
 
-killall "Safari" || true
 open -a Safari
 sleep 10 
 $POWERLOG -resolution 5 -file $OUTPUT_DIR/safari_navigation.csv -cmd osascript ./safari_navigation.scpt;
-killall "Safari" || true
+# If kill fail abort. It means the browser quit itself.
+killall "Safari"
