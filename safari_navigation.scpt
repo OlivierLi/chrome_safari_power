@@ -3,6 +3,8 @@ tell application "Safari"
       activate
       set w to first window
 
+      set bounds of w to {0, 0, 1920, 1080}
+
       --open location "http://cnn.com"
       --delay 15
       --set t to current tab of w
@@ -15,6 +17,7 @@ tell application "Safari"
 
       open location "http://www.polygon.com"
       delay 15
+
       set t to current tab of w
       close t 
 
