@@ -5,24 +5,16 @@ tell application "Chromium"
 
       set bounds of front window to {0, 0, 1920, 1080}
 
-      --open location "http://cnn.com"
-      --delay 15
-      --tell active tab of window 1
-        --close
-      --end tell
+      set sites to {"http://cnn.com", "http://www.bestbuy.ca", "http://www.polygon.com"}
+      repeat with site in sites
+        open location site
+        delay 15 
 
-      --open location "http://www.bestbuy.ca"
-      --delay 15
-      --tell active tab of window 1
-        --close
-      --end tell
+        tell active tab of w
+          close
+        end tell
 
-      open location "http://www.polygon.com"
-      delay 15
-
-      tell active tab of w
-        close
-      end tell
+      end repeat
 
       activate
     end if

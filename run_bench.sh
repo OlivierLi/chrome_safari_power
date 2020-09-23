@@ -2,10 +2,16 @@
 
 set -eu
 
+# Get the functions
+source ./functions.sh
+
+CheckEnv
+
 # Parameters
 SITES="polygon.com"
 RUN="IncreasedMemory2GB"
 OUTPUT_DIR=/Users/olivier/Documents/
+mkdir -p $OUTPUT_DIR
 
 # Binaries
 POWERLOG=/Applications/Intel\ Power\ Gadget/Powerlog

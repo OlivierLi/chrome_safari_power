@@ -5,21 +5,14 @@ tell application "Safari"
 
       set bounds of w to {0, 0, 1920, 1080}
 
-      --open location "http://cnn.com"
-      --delay 15
-      --set t to current tab of w
-      --close t 
+      set sites to {"http://cnn.com", "http://www.bestbuy.ca", "http://www.polygon.com"}
+      repeat with site in sites
+        open location site
+        delay 15
 
-      --open location "http://www.bestbuy.ca"
-      --delay 15
-      --set t to current tab of w
-      --close t 
-
-      open location "http://www.polygon.com"
-      delay 15
-
-      set t to current tab of w
-      close t 
+        set t to current tab of w
+        close t 
+      end repeat
 
       activate
     end if
