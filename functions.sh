@@ -58,8 +58,8 @@ function CheckEnv()
   CheckDisplayValue "Automatically adjust brightness" "No" "Disable automatic brightness adjustments and unplug external monitors"
 
   # Use caffeinate to avoid sleeping during the tests.
-  if !pgrep -x "caffeinate" > /dev/null; then
-    echo "Use caffeinate to prevent sleep."
+  if !pgrep -x "Amphetamine" > /dev/null; then
+    echo "Use Amphetamine to prevent sleep."
     exit 127
   fi
 }

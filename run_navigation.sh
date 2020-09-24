@@ -9,7 +9,8 @@ CheckEnv
 
 POWERLOG=/Applications/Intel\ Power\ Gadget/Powerlog
 OUTPUT_DIR=/Users/olivier/Documents/TripleNavigations/
-mkdir -p $OUTPUT_DIR
+mkdir -p $OUTPUT_DIR/chrome
+mkdir -p $OUTPUT_DIR/safari
 
 # This script uses the open command which needs the path to the .app
 CHROMIUM_APP=/Users/olivier/git/chromium/src/out/Baseline/Chromium.app
@@ -23,7 +24,7 @@ for i in $(seq 1 60); do
 
   open $CHROMIUM_APP 
   sleep 10 
-  $POWERLOG -resolution 5 -file $OUTPUT_DIR/chrome_navigation.$i.csv -cmd osascript ./chrome_navigation.scpt;
+  $POWERLOG -resolution 10 -file $OUTPUT_DIR/chrome/navigation.$i.csv -cmd osascript ./chrome_navigation.scpt;
   # If kill fail abort. It means the browser quit itself.
   killall "Chromium"
 
@@ -34,7 +35,7 @@ for i in $(seq 1 60); do
   open -a Safari
 
   sleep 10 
-  $POWERLOG -resolution 5 -file $OUTPUT_DIR/safari_navigation.$i.csv -cmd osascript ./safari_navigation.scpt;
+  $POWERLOG -resolution 20 -file $OUTPUT_DIR/safari/navigation.$i.csv -cmd osascript ./safari_navigation.scpt;
   # If kill fail abort. It means the browser quit itself.
   killall "Safari"
 
