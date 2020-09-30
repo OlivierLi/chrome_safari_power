@@ -1,0 +1,52 @@
+<script>
+
+  'use strict';
+
+  function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  function writeCookie() {
+    document.body.innerHTML = makeid(1000);
+  }
+
+  function myFunction() { 
+   
+    // Get the params from the URL
+    var param_dict = {};
+    var params = window.location.search.slice(1).split("&");
+    params.forEach(function(pair){
+      var split = pair.split("=");
+      var name = split[0];
+      var value = split[1];
+      param_dict[name] = value;
+    });
+
+    // Interval is the same for everyone. It's the start time that's different.
+    var interval = parseInt(param_dict["interval"]);
+    var allignement = parseInt(param_dict["allignement"]);
+    
+    var now = Date.now();
+    while(now % allignement != 0){
+      now = Date.now();
+    }
+    setInterval(writeCookie, interval);
+  }
+
+</script>
+
+<html>
+<head>
+  <title>Spam Tasks!</title>
+</head>
+<body onload="myFunction()">
+</body>
+</html>
+
+
