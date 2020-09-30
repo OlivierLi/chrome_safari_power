@@ -1,8 +1,17 @@
 <script>
 
+  // Try to make this a more san experience by failing fast.
   'use strict';
 
-  function makeid(length) {
+  // Setup the broadcast channel to talk to the other pages.
+  const bc = new BroadcastChannel('test_channel');
+  bc.onmessage = onConnect; 
+
+  // Store the params passed in directly to the page.
+  var param_dict = {};
+
+  // Simply return a random string of the appropriate length.
+  function getRandomString(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
@@ -12,14 +21,43 @@
     return result;
   }
 
-  function writeCookie() {
-    document.body.innerHTML = makeid(1000);
+  // Completely change the content of the page html to trigger rendering.
+  function changeInnerHTMLBody() {
+    document.body.innerHTML = getRandomString(1000);
   }
 
-  function myFunction() { 
-   
+  // Kick-off the repearing timer and warn the next peer to start also.
+  function startRepeatingTasks(interval){
+
+    // Busy loop until we are alligned.
+    var now = Date.now();
+    var allignement = parseInt(param_dict["allignement"]);
+    while(now % allignement != 0){
+      now = Date.now();
+    }
+
+    // Write down the effective start time.
+    param_dict["start_time"] = now.toString();
+
+    // Start then warn peers.
+    setInterval(changeInnerHTMLBody, interval);
+    bc.postMessage(JSON.stringify(param_dict));
+  }
+
+  // When peer n-1 has started we can start ourselves.
+  function onConnect(event){
+    var result = JSON.parse(event.data);
+
+    // Only react to peer n-1 starting.
+    if(parseInt(result["peerID"]) == parseInt(param_dict["peerID"]) - 1){
+
+      startRepeatingTasks(parseInt(param_dict["interval"]));
+      console.log(result); 
+    }
+  }
+
+  function onLoad() { 
     // Get the params from the URL
-    var param_dict = {};
     var params = window.location.search.slice(1).split("&");
     params.forEach(function(pair){
       var split = pair.split("=");
@@ -28,25 +66,26 @@
       param_dict[name] = value;
     });
 
-    // Interval is the same for everyone. It's the start time that's different.
     var interval = parseInt(param_dict["interval"]);
     var allignement = parseInt(param_dict["allignement"]);
-    
-    var now = Date.now();
-    while(now % allignement != 0){
-      now = Date.now();
+
+    if(param_dict["peerID"] == "1"){
+      startRepeatingTasks(interval);
     }
-    setInterval(writeCookie, interval);
+  }
+
+  function cleaup() { 
+    bc.close();
   }
 
 </script>
 
 <html>
-<head>
-  <title>Spam Tasks!</title>
-</head>
-<body onload="myFunction()">
-</body>
+  <head>
+    <title>Spam Tasks!</title>
+  </head>
+  <body onload="onLoad()" onunload="cleanup()">
+  </body>
 </html>
 
 
