@@ -8,7 +8,7 @@ source ./functions.sh
 CheckEnv
 
 POWERLOG=/Applications/Intel\ Power\ Gadget/Powerlog
-OUTPUT_DIR=/Users/olivier/Documents/TripleNavigations/
+OUTPUT_DIR=/Users/olivier/Documents/SingleNavigation/
 mkdir -p $OUTPUT_DIR/chrome
 mkdir -p $OUTPUT_DIR/safari
 
@@ -23,8 +23,10 @@ for i in $(seq 1 60); do
   echo $i;
 
   open $CHROMIUM_APP 
+  #osascript ./driver_scripts/chrome_setup_idle_on_site.scpt
+
   sleep 10 
-  $POWERLOG -resolution 10 -file $OUTPUT_DIR/chrome/navigation.$i.csv -cmd osascript ./chrome_navigation.scpt;
+  $POWERLOG -resolution 10 -file $OUTPUT_DIR/chrome/navigation.$i.csv -cmd osascript ./driver_scripts/chrome_navigation.scpt;
   # If kill fail abort. It means the browser quit itself.
   killall "Chromium"
 
@@ -34,8 +36,10 @@ for i in $(seq 1 60); do
   osascript ./prep_safari.scpt;
   open -a Safari
 
+  #osascript ./driver_scripts/safari_setup_idle_on_site.scpt
+
   sleep 10 
-  $POWERLOG -resolution 20 -file $OUTPUT_DIR/safari/navigation.$i.csv -cmd osascript ./safari_navigation.scpt;
+  $POWERLOG -resolution 10 -file $OUTPUT_DIR/safari/navigation.$i.csv -cmd osascript ./driver_scripts/safari_navigation.scpt;
   # If kill fail abort. It means the browser quit itself.
   killall "Safari"
 

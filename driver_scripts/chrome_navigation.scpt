@@ -5,7 +5,8 @@ tell application "Chromium"
 
       set bounds of front window to {0, 0, 1920, 1080}
 
-      set sites to {"http://cnn.com", "http://www.bestbuy.ca", "http://www.polygon.com"}
+      --set sites to {"http://cnn.com", "http://www.bestbuy.ca", "http://www.polygon.com"}
+      set sites to {"http://www.polygon.com"}
       repeat with site in sites
         open location site
         delay 15 
