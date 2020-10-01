@@ -33,8 +33,7 @@ function startRepeatingTasks(interval){
 
   // Busy loop until we are alligned.
   var now = Date.now();
-  var allignement = parseInt(param_dict["allignement"]);
-  while(now % allignement != 0){
+  while(now % interval != 0){
     now = Date.now();
   }
 
@@ -43,9 +42,6 @@ function startRepeatingTasks(interval){
   while(now < deadline){
     now = Date.now();
   }
-
-  // Write down the effective start time.
-  param_dict["start_time"] = now.toString();
 
   // Start then warn peers.
   setInterval(changeInnerHTMLBody, interval);
@@ -75,8 +71,8 @@ function onLoad() {
   });
 
   var interval = parseInt(param_dict["interval"]);
-  var allignement = parseInt(param_dict["allignement"]);
 
+  // First page can't wait for anybody else to start!
   if(param_dict["peerID"] == "1"){
     startRepeatingTasks(interval);
   }
