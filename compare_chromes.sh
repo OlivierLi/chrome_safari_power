@@ -3,9 +3,7 @@
 set -eu
 
 # Get the functions
-source ./functions.sh
-
-CheckEnv
+source ./check_env.sh
 
 # Parameters
 SITES="polygon.com"

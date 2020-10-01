@@ -1,9 +1,6 @@
 #! /bin/zsh
 set -eu
 
-# This files makes functions available to allow the other scripts to verify they are running 
-# in a sane environment for battery life testing.
-
 function SystemProfilerProperty()
 {
   local result=$2
@@ -23,7 +20,7 @@ function GetDisplayProperty()
 
 function CompareValue()
 {
-  if [ "$VALUE" != "$2" ]; then
+  if [ "$1" != "$2" ]; then
     echo $3
     exit 127
   fi
@@ -51,7 +48,7 @@ function CheckEnv()
 {
   # Use command: pmset -c gpuswtich 2 to allow switching on charger.
   # Use command: pmset -b gpuswtich 0 to force intel on battery.
-  CheckPowerValue "gpuswitch" "20" "GPU mode should be set to Intel Graphics only when on battery."
+  #CheckPowerValue "gpuswitch" "20" "GPU mode should be set to Intel Graphics only when on battery."
 
   # Validate power setup.
   CheckPowerValue "charging" "NoNo" "Laptop cannot be charging during test."
@@ -60,9 +57,15 @@ function CheckEnv()
   # Validate display setup.
   CheckDisplayValue "Automatically adjust brightness" "No" "Disable automatic brightness adjustments and unplug external monitors"
 
-  # Use caffeinate to avoid sleeping during the tests.
+  # Use Amphetamine.app to avoid sleeping during the tests.
   if ! pgrep -x "Amphetamine" > /dev/null; then
     echo "Use Amphetamine to prevent sleep."
     exit 127
   fi
+  CompareValue $(defaults read com.if.Amphetamine "Default Duration") "0" "Default session length in Amphetamine should be unlimited";
+  CompareValue $(defaults read com.if.Amphetamine "Start Session At Launch") "1" "Amphetamine session should be default launched to avoid forgetting.";
+
 }
+
+# Run the checks
+CheckEnv

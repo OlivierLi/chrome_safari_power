@@ -2,9 +2,7 @@
 set -eu
 
 # Get the functions
-source ./functions.sh
-
-CheckEnv
+source ./check_env.sh
 
 GetPowerProperty "Charge Remaining" CAPACITY_BEFORE 
 echo "Capacity before run: $CAPACITY_BEFORE"

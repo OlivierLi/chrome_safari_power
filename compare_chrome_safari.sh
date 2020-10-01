@@ -3,9 +3,7 @@
 set -eu
 
 # Get the functions
-source ./functions.sh
-
-CheckEnv
+source ./check_env.sh
 
 POWERLOG=/Applications/Intel\ Power\ Gadget/Powerlog
 OUTPUT_DIR=/Users/olivier/Documents/SingleNavigation/
