@@ -48,7 +48,7 @@ function CheckEnv()
 {
   # Use command: pmset -c gpuswtich 2 to allow switching on charger.
   # Use command: pmset -b gpuswtich 0 to force intel on battery.
-  #CheckPowerValue "gpuswitch" "20" "GPU mode should be set to Intel Graphics only when on battery."
+  CheckPowerValue "gpuswitch" "20" "GPU mode should be set to Intel Graphics only when on battery."
 
   # Validate power setup.
   CheckPowerValue "charging" "NoNo" "Laptop cannot be charging during test."
