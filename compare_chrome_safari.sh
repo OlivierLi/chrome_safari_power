@@ -32,7 +32,7 @@ for i in $(seq 1 60); do
   # Safari needs this housekeeping to clear all open tabs otherwise
   # they get restored.
   open -a Safari
-  osascript ./prep_safari.scpt;
+  osascript ./driver_scripts/prep_safari.scpt;
   open -a Safari
 
   #osascript ./driver_scripts/safari_setup_idle_on_site.scpt

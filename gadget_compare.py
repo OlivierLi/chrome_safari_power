@@ -12,10 +12,6 @@ import fnmatch
 import shutil
 import argparse
 
-__author__ = "Your Name"
-__version__ = "0.1.0"
-__license__ = "MIT"
-
 cumulative_energy_column_name = "Cumulative Processor Energy_0(mWh)"
 
 def gather_files(dir_path):
