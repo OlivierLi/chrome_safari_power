@@ -27,10 +27,20 @@ function changeInnerHTMLBody() {
 // Kick-off the repearing timer and warn the next peer to start also.
 function startRepeatingTasks(interval){
 
+  // Find out how long this specific peer has to wait.
+  var peer_id = parseInt(param_dict["peerID"]);
+  var wait_length = parseInt(param_dict["interval"]) / parseInt(param_dict["numPeers"]) * peer_id;
+
   // Busy loop until we are alligned.
   var now = Date.now();
   var allignement = parseInt(param_dict["allignement"]);
   while(now % allignement != 0){
+    now = Date.now();
+  }
+
+  // Sleep for the additional time. This makes sure the tasks are unaligned.
+  var deadline = now + wait_length;
+  while(now < deadline){
     now = Date.now();
   }
 
