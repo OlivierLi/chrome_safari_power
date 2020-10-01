@@ -1,3 +1,6 @@
+// This code is used to execute costly repeating timers. on different renderers. 
+// See the HTML file to know how to invoke this with the correst parameters.
+
 // Try to make this a more san experience by failing fast.
 'use strict';
 

@@ -23,6 +23,7 @@ for i in $(seq 1 60); do
   echo $i;
 
   open $CHROMIUM_APP 
+
   #osascript ./driver_scripts/chrome_setup_idle_on_site.scpt
 
   sleep 10 

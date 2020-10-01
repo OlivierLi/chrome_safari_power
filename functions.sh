@@ -1,6 +1,9 @@
 #! /bin/zsh
 set -eu
 
+# This files makes functions available to allow the other scripts to verify they are running 
+# in a sane environment for battery life testing.
+
 function SystemProfilerProperty()
 {
   local result=$2
