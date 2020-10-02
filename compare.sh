@@ -3,7 +3,7 @@
 set -eu
 
 # Get the functions
-source ./check_env.sh
+#source ./check_env.sh
 
 POWERLOG=/Applications/Intel\ Power\ Gadget/Powerlog
 OUTPUT_DIR=/Users/olivier/Documents/Test/
@@ -45,6 +45,11 @@ for i in $(seq 1 60); do
 
   #osascript ./driver_scripts/chrome_setup_idle_on_site.scpt
   RecordPower "Chromium" ./driver_scripts/chrome_navigation.scpt;
+
+  # For some reason macOS does not like consecutive calls to
+  # open/kill for the same app. Add a useless open and close of finder
+  # right here in case Chromium is tested twice.
+  osascript ./driver_scripts/finder.scpt
 
   #osascript ./driver_scripts/safari_setup_idle_on_site.scpt
   RecordPower "Safari" ./driver_scripts/safari_navigation.scpt;
