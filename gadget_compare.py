@@ -35,7 +35,7 @@ def load_dir(dir_path):
 
     for csv in gather_files(dir_path):
         df = pd.read_csv(csv, engine="python", header=0, skipfooter=15, na_values = [''])
-        cumulative_package_energy = df[cumulative_energy_column_name ].max()
+        cumulative_package_energy = df[cumulative_energy_column_name].max()
 
         # Not the most efficient thing. Change to concat if this is getting slow.
         agg_data = agg_data.append({cumulative_energy_column_name: cumulative_package_energy}, ignore_index = True)
@@ -57,8 +57,8 @@ def clean(df):
     assert(df.shape[1] == 1)
 
     df['z_score'] = df.apply(lambda x: (x - x.mean())/x.std())
-    df[abs(df['z_score']) > 3]
-    
+    df = df[abs(df['z_score']) < 3]
+
     return df.drop(columns=['z_score'])    
 
 
@@ -78,7 +78,13 @@ def compare(baseline, experiment):
         percent_change = 100*diff/baseline_value 
 
         print("Baseline avg {}: {:0.2f}".format(column, baseline_value)) 
+        print("Baseline max {}: {:0.2f}".format(column, baseline[column].max())) 
+        print("Baseline min {}: {:0.2f}".format(column, baseline[column].min())) 
+
         print("Experiment avg {}: {:0.2f}".format(column, experiment_value)) 
+        print("Experiment max {}: {:0.2f}".format(column, experiment[column].max()))
+        print("Experiment min {}: {:0.2f}".format(column, experiment[column].min()))
+
         print("Change in avg {}: {}{:0.2f} ({:0.2f}%)".format(column, get_sign(diff), diff, percent_change)) 
 
 def main():
