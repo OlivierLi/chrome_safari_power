@@ -12,7 +12,7 @@ Use to execute 60 runs of comparisons between two browsers. By default the singl
 This directory contains special webpages that can be loaded from disk in a navigator to verify certain behaviors.
 
 ## driver_scripts/
-This directory contains scripts that can control the behaviour of Chrome or Safari to reproduce usage scenarios. The scripts are not responsible for starting the application. This should be done seperatly.
+This directory contains scripts that can control the behaviour of Chrome or Safari to reproduce usage scenarios. The scripts will start the browsers if we want to include startup in the power capture. If not that can be done seperatly.
 
 ## check_env.sh
 This file makes functions available to allow the other scripts to verify they are running in a sane environment for battery life testing.

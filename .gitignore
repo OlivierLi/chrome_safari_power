@@ -131,3 +131,6 @@ dmypy.json
 # Vim files 
 *.swp
 jsconfig.json
+
+# Output files
+results/

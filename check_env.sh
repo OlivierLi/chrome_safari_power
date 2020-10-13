@@ -1,6 +1,9 @@
 #! /bin/zsh
 set -eu
 
+# By default intel GPU should be used on battery.
+GPU_MODE="20"
+
 function SystemProfilerProperty()
 {
   local result=$2
@@ -48,7 +51,7 @@ function CheckEnv()
 {
   # Use command: pmset -c gpuswtich 2 to allow switching on charger.
   # Use command: pmset -b gpuswtich 0 to force intel on battery.
-  CheckPowerValue "gpuswitch" "20" "GPU mode should be set to Intel Graphics only when on battery."
+  CheckPowerValue "gpuswitch" "$GPU_MODE" "GPU mode invalid."
 
   # Validate power setup.
   CheckPowerValue "charging" "NoNo" "Laptop cannot be charging during test."
@@ -66,6 +69,3 @@ function CheckEnv()
   CompareValue $(defaults read com.if.Amphetamine "Start Session At Launch") "1" "Amphetamine session should be default launched to avoid forgetting.";
 
 }
-
-# Run the checks
-CheckEnv
