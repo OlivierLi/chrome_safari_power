@@ -1,5 +1,5 @@
 # How to use these scripts
-* ./compare_chrome_safari.sh
+* ./compare.sh
 * ./gadget_compare.py {chrome_result_dir} {safari_result_dir}
 
 ## gadget_compare.py
