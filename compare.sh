@@ -31,7 +31,7 @@ function RecordPower()
       osascript ./driver_scripts/prep_safari.scpt;
       open -a Safari
     elif [ "$1" = "Chromium" ]; then
-      open $CHROMIUM_APP 
+      open $CHROMIUM_APP --args  --user-data-dir="/tmp/UserDataDir/" --profile-directory="$4" $5
     else
       echo "Invalid app chosen!";
       exit 127
@@ -53,7 +53,7 @@ function RecordChrome(){
   # TODO: Check signing with this: codesign --verify --verbose
 
   #osascript ./driver_scripts/chrome_setup_idle_on_site.scpt
-  RecordPower "Chromium" "Chromium" ./driver_scripts/chrome_navigation.scpt;
+  RecordPower "Chromium" "Chromium" ./driver_scripts/chrome_navigation.scpt "Baseline" "";
 
   # If kill fail abort. It means the browser quit itself.
   killall "Chromium"
@@ -64,7 +64,7 @@ function RecordChromeExperiment(){
   CHROMIUM_APP=/tmp/signed/Chromium-87.0.4273.0/Chromium.app
 
   #osascript ./driver_scripts/chrome_setup_idle_on_site.scpt
-  RecordPower "Chromium" "ChromiumExperiment" ./driver_scripts/chrome_alligned_timers.scpt;
+  RecordPower "Chromium" "ChromiumExperiment" ./driver_scripts/chrome_navigation.scpt "Experiment" "--disable-site-isolation-trials";
 
   # If kill fail abort. It means the browser quit itself.
   killall "Chromium"
@@ -99,7 +99,7 @@ function ChromeVsChrome(){
 }
 
 function Run(){
-  OUTPUT_DIR=/Users/olivier/Documents/AllignedTimers/
+  OUTPUT_DIR=/Users/olivier/Documents/SiteIsolationIdle/
   CheckEnv
 
   # Kill all browsers just to be sure.
@@ -152,4 +152,3 @@ function IsolateCPUPower(){
 }
 
 Run
-

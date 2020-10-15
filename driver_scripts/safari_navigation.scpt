@@ -16,11 +16,12 @@ tell application "Safari"
 
       repeat with i from 1 to 1 
 
-        --set sites to {"http://cnn.com", "http://www.bestbuy.ca", "http://www.polygon.com"}
-        set sites to {"http://www.polygon.com"}
+        set sites to {"http://cnn.com", "http://www.bestbuy.ca", "http://www.polygon.com"}
+        --set sites to {"http://www.polygon.com"}
         repeat with site in sites
           open location site
-          delay 15
+
+          delay 30
 
           set t to current tab of w
           close t 
