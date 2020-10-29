@@ -16,3 +16,11 @@ This directory contains scripts that can control the behaviour of Chrome or Safa
 
 ## check_env.sh
 This file makes functions available to allow the other scripts to verify they are running in a sane environment for battery life testing.
+
+# Signing your Chrome builds
+Runnning the Chrome vs Chrome benchmarks require the use of signed builds. To do that you need to follow the following instructions:
+
+1. Create a signing certificate in Xcode.
+2. Find your code signing identity using `security find-identity -v -p codesigning`
+3. Follow the chrome signing [instructions](https://source.chromium.org/chromium/chromium/src/+/master:chrome/installer/mac/signing/README.md)
+4. Now you have a signed build!
