@@ -49,8 +49,8 @@ CheckDisplayValue()
 
 function CheckEnv()
 {
-  # Use command: pmset -c gpuswtich 2 to allow switching on charger.
-  # Use command: pmset -b gpuswtich 0 to force intel on battery.
+  # Use command: pmset -c gpuswitch 2 to allow dynamic gpu switching on charger.
+  # Use command: pmset -b gpuswitch 0 to force Intel on battery.
   CheckPowerValue "gpuswitch" "$GPU_MODE" "GPU mode invalid."
 
   # Validate power setup.
