@@ -7,6 +7,8 @@ tell application "Safari"
 
       open location "http://www.polygon.com"
 
+      delay 1500
+
       activate
     end if
 end tell

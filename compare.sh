@@ -41,9 +41,11 @@ function RecordPower()
     sleep 10
   fi
 
+  # TODO: Put this behind an arg so we don't start power gadget.
   # Record the power usage.
-  $POWERLOG -resolution 100 -file $OUTPUT_DIR/$2/navigation.$i.csv -cmd osascript $3;
+  #$POWERLOG -resolution 100 -file $OUTPUT_DIR/$2/navigation.$i.csv -cmd osascript $3;
 
+  osascript $3;
 }
 
 function RecordChrome(){
@@ -151,4 +153,4 @@ function IsolateCPUPower(){
   echo "Idle, $CAPACITY_BEFORE, $CAPACITY_AFTER, $energy_used" >> results/idle.csv;
 }
 
-Run
+#Run
