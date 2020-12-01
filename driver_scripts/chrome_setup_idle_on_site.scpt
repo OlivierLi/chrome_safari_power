@@ -1,10 +1,12 @@
-tell application "Chromium" 
+tell application "Google Chrome" 
     if it is running then
       activate
 
-      set bounds of front window to {0, 0, 1920, 1080}
+      set bounds of front window to {0, 0, 1280, 720}
 
-      open location "http://www.polygon.com"
+      open location "http://www.wikipedia.com/wiki/Alessandro_Volta"
+
+      delay 3600
 
       activate
     end if

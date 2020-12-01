@@ -51,7 +51,7 @@ function CheckEnv()
 {
   # Use command: pmset -c gpuswitch 2 to allow dynamic gpu switching on charger.
   # Use command: pmset -b gpuswitch 0 to force Intel on battery.
-  CheckPowerValue "gpuswitch" "$GPU_MODE" "GPU mode invalid."
+  #CheckPowerValue "gpuswitch" "$GPU_MODE" "GPU mode invalid."
 
   # Validate power setup.
   CheckPowerValue "charging" "NoNo" "Laptop cannot be charging during test."

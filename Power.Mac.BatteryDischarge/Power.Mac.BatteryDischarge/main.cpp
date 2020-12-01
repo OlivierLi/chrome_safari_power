@@ -1,6 +1,7 @@
 #include <iostream>
 #include <optional>
 #include <fstream>
+#include <cmath>
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
@@ -67,7 +68,13 @@ private:
         
         if(logger->last_capacity != 0){
             SInt64 difference = logger->last_capacity - current_capacity.value();
-            SInt64 discharge = static_cast<double>(difference) / max_capacity.value() * 10000;
+            SInt64 discharge = std::round(static_cast<double>(difference) / max_capacity.value() * 10000);
+            
+            // Capacity went up. We're charging or something is weird. Discard this reading and the next one.
+            if(difference < 0){
+                logger->last_capacity = 0;
+                return;
+            }
 
             logger->output_file << current_capacity.value() << "," << max_capacity.value() << "," << discharge  << std::endl;
         }

@@ -3,11 +3,11 @@ tell application "Safari"
       activate
       set w to first window
 
-      set bounds of w to {0, 0, 1920, 1080}
+      set bounds of w to {0, 0, 1280, 720}
 
-      open location "http://www.polygon.com"
+      open location "http://www.wikipedia.com/wiki/Alessandro_Volta"
 
-      delay 1500
+      delay 3600
 
       activate
     end if
