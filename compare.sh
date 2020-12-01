@@ -16,13 +16,6 @@ function RecordPower()
 {
   mkdir -p $OUTPUT_DIR/$2
 
-  if [ "$1" = "Safari" ]; then
-      # Safari needs this housekeeping to clear all open tabs otherwise
-      # they get restored.
-      open -a Safari
-      osascript ./driver_scripts/prep_safari.scpt;
-  fi
-
   if [ "$WAIT_FOR_STARTUP" = "true" ]; then
     if [ "$1" = "Safari" ]; then
       # Safari needs this housekeeping to clear all open tabs otherwise
@@ -40,9 +33,11 @@ function RecordPower()
       echo "Invalid app chosen!";
       exit 127
     fi
+  fi
 
-    # Leave some time for the browser to start to avoid capturing startup.
-    sleep 10
+  if [ "$6" != "NONE" ]
+  then
+    osascript $6;
   fi
 
   # TODO: Put this behind an arg so we don't start power gadget.

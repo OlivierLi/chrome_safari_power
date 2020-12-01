@@ -139,4 +139,9 @@ battery_discharge.csv
 # Mac files
 .DS_STORE
 
+# Generated scripts
+driver_scripts/chrome*
+driver_scripts/edge*
+driver_scripts/chromium*
+driver_scripts/background*
 

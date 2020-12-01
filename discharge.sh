@@ -6,7 +6,7 @@ set -eux
 source check_env.sh
 source ./compare.sh
 
-CheckEnv
+#CheckEnv
 
 # Local paths
 BIN=/Users/olivier/Library/Developer/Xcode/DerivedData/Power.Mac.BatteryDischarge-frtspoojsdrdsycbpuzpwyqlczdp/Build/Products/Debug/Power.Mac.BatteryDischarge
@@ -30,20 +30,33 @@ function Record(){
 
   # Run the scenario.
   OUTPUT_DIR=./results
-  RecordPower $1  $1 ./driver_scripts/${1}_setup_idle_on_site.scpt "Experiment" ""
+  RecordPower $1 $1 ./driver_scripts/${1}_${2}.scpt "Experiment" "" $4
 
   KillALL
 
   # Rename the results and save.
-  mv battery_discharge.csv ./results/$1/$2.csv
+  mv battery_discharge.csv ./results/$1/$3.csv
 }
 
-SCENARIO="idle_on_site"
-Record "Chrome" $SCENARIO
-Record "Safari" $SCENARIO
-Record "Edge" $SCENARIO
+#SCENARIO="idle_on_site"
+#Record "Chrome" $SCENARIO $SCENARIO "NONE"
+#Record "Safari" $SCENARIO $SCENARIO "NONE"
+#Record "Edge" $SCENARIO $SCENARIO "NONE"
 
-SCENARIO="navigation"
-Record "Chrome" $SCENARIO
-Record "Safari" $SCENARIO
-Record "Edge" $SCENARIO
+#SCENARIO="navigation"
+#Record "Chrome" $SCENARIO $SCENARIO "NONE"
+#Record "Safari" $SCENARIO $SCENARIO "NONE"
+#Record "Edge" $SCENARIO $SCENARIO "NONE"
+
+#SCENARIO="navigation"
+#Record "Chrome" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/chrome_open_background.scpt"
+#Record "Safari" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/safari_open_background.scpt"
+#Record "Chrome" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/edge_open_background.scpt"
+
+#SCENARIO="Scroll"
+#Record "Chrome" $SCENARIO $SCENARIO "NONE"
+#Record "Safari" $SCENARIO $SCENARIO "NONE"
+#Record "Edge" $SCENARIO $SCENARIO "NONE"
+
+TODO: Find a way to have to generate the idle script with simply youtube on a video.
+TODO: Find a way to start the recording once everything is loaded. Or we continue ignoring all the first readings?

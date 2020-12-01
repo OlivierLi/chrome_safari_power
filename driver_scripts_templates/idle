@@ -1,4 +1,4 @@
-tell application "Chromium" 
+tell application " {{ browser }}" 
     if it is running then
       activate
 
