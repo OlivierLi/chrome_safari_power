@@ -12,12 +12,12 @@ tell application "Safari"
     if it is running then
       activate
       set w to first window
-      set bounds of w to {0, 0, 1920, 1080}
+      set bounds of w to {0, 0, 1280, 720}
 
-      repeat with i from 1 to 1 
+      -- Each cycles takes about 2 mins. Aim for a test that takes an hour.
+      repeat with i from 1 to 15 
 
-        set sites to {"http://cnn.com", "http://www.bestbuy.ca", "http://www.polygon.com"}
-        --set sites to {"http://www.polygon.com"}
+        set sites to {"http://cnn.com", "http://www.lapresse.ca", "http://www.nytimes.com", "http://theguardian.com"}
         repeat with site in sites
           open location site
 

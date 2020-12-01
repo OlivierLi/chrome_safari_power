@@ -31,9 +31,11 @@ function RecordPower()
       osascript ./driver_scripts/prep_safari.scpt;
       open -a Safari
     elif [ "$1" = "Chromium" ]; then
-      open $CHROMIUM_APP --args  --user-data-dir="/tmp/UserDataDir/" --profile-directory="$4" $5
+      open $CHROMIUM_APP --args  --user-data-dir="/tmp/UserDataDir_$1/" --profile-directory="$4" $5
     elif [ "$1" = "Chrome" ]; then
-      open -a 'Google Chrome' --args  --user-data-dir="/tmp/UserDataDir/" --profile-directory="$4" $5
+      open -a 'Google Chrome' --args  --user-data-dir="/tmp/UserDataDir_$1/" --profile-directory="$4" $5
+    elif [ "$1" = "Edge" ]; then
+      open -a 'Microsoft Edge' --args  --user-data-dir="/tmp/UserDataDir_$1/" --profile-directory="$4" $5
     else
       echo "Invalid app chosen!";
       exit 127

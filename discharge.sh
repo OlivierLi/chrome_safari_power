@@ -6,7 +6,7 @@ set -eux
 source check_env.sh
 source ./compare.sh
 
-CheckEnv
+#CheckEnv
 
 # Local paths
 BIN=/Users/olivier/Library/Developer/Xcode/DerivedData/Power.Mac.BatteryDischarge-frtspoojsdrdsycbpuzpwyqlczdp/Build/Products/Debug/Power.Mac.BatteryDischarge
@@ -16,6 +16,7 @@ function KillALL(){
   killall -9 "Chromium" || true
   killall -9 "Google Chrome" || true
   killall -9 "Safari" || true
+  killall -9 "Microsoft Edge" || true
 
   # Make sure we're not already recording
   killall Power.Mac.BatteryDischarge || true
@@ -40,4 +41,9 @@ function Record(){
 SCENARIO="idle_on_site"
 Record "Chrome" $SCENARIO
 Record "Safari" $SCENARIO
+Record "Edge" $SCENARIO
 
+SCENARIO="navigation"
+Record "Chrome" $SCENARIO
+Record "Safari" $SCENARIO
+Record "Edge" $SCENARIO

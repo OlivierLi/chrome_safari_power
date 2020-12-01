@@ -1,4 +1,4 @@
-tell application "Google Chrome" 
+tell application "Microsoft Edge" 
 
     -- If Chromium is already started then just bring
     -- it to the forefront otherwise open it.

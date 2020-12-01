@@ -134,3 +134,9 @@ jsconfig.json
 
 # Output files
 results/
+battery_discharge.csv
+
+# Mac files
+.DS_STORE
+
+
