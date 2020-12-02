@@ -23,7 +23,7 @@ tell application "Chromium"
         repeat with site in sites
           open location site
 
-          delay 60 
+          delay 15 
 
           tell active tab of w
             close

@@ -21,7 +21,7 @@ tell application "Safari"
         repeat with site in sites
           open location site
 
-          delay 60 
+          delay 15 
 
           set t to current tab of w
           close t 
