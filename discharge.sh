@@ -38,25 +38,32 @@ function Record(){
   mv battery_discharge.csv ./results/$1/$3.csv
 }
 
-#SCENARIO="idle_on_site"
-#Record "Chrome" $SCENARIO $SCENARIO "NONE"
-#Record "Safari" $SCENARIO $SCENARIO "NONE"
-#Record "Edge" $SCENARIO $SCENARIO "NONE"
+./generate_scripts.py
 
-#SCENARIO="navigation"
-#Record "Chrome" $SCENARIO $SCENARIO "NONE"
-#Record "Safari" $SCENARIO $SCENARIO "NONE"
-#Record "Edge" $SCENARIO $SCENARIO "NONE"
+SCENARIO="idle_on_wiki"
+Record "Chrome" $SCENARIO $SCENARIO "NONE"
+Record "Safari" $SCENARIO $SCENARIO "NONE"
+Record "Edge" $SCENARIO $SCENARIO "NONE"
 
-#SCENARIO="navigation"
-#Record "Chrome" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/chrome_open_background.scpt"
-#Record "Safari" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/safari_open_background.scpt"
-#Record "Chrome" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/edge_open_background.scpt"
+SCENARIO="navigation"
+Record "Chrome" $SCENARIO $SCENARIO "NONE"
+Record "Safari" $SCENARIO $SCENARIO "NONE"
+Record "Edge" $SCENARIO $SCENARIO "NONE"
 
-#SCENARIO="Scroll"
-#Record "Chrome" $SCENARIO $SCENARIO "NONE"
-#Record "Safari" $SCENARIO $SCENARIO "NONE"
-#Record "Edge" $SCENARIO $SCENARIO "NONE"
+SCENARIO="navigation"
+Record "Chrome" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/chrome_open_background.scpt"
+Record "Safari" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/safari_open_background.scpt"
+Record "Chrome" $SCENARIO ${SCENARIO}_with_background "./driver_scripts/edge_open_background.scpt"
 
-TODO: Find a way to have to generate the idle script with simply youtube on a video.
-TODO: Find a way to start the recording once everything is loaded. Or we continue ignoring all the first readings?
+SCENARIO="Scroll"
+Record "Chrome" $SCENARIO $SCENARIO "NONE"
+Record "Safari" $SCENARIO $SCENARIO "NONE"
+Record "Edge" $SCENARIO $SCENARIO "NONE"
+
+SCENARIO="idle_on_youtube"
+Record "Chrome" $SCENARIO $SCENARIO "NONE"
+Record "Safari" $SCENARIO $SCENARIO "NONE"
+Record "Edge" $SCENARIO $SCENARIO "NONE"
+
+#TODO: Find a way to start the recording once everything is loaded. Or we continue ignoring all the first readings?
+#TODO: Add the generation as part of running discharge

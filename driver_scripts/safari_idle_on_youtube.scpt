@@ -5,9 +5,9 @@ tell application "Safari"
 
       set bounds of w to {0, 0, 1280, 720}
 
-      open location "{{ idle_site }}"
+      open location "https://www.youtube.com/watch?v=9EE_ICC_wFw"
 
-      delay {{ delay }}
+      delay 3
 
       activate
     end if

@@ -1,12 +1,12 @@
-tell application "{{ browser }}" 
+tell application "Google Chrome" 
     if it is running then
       activate
 
       set bounds of front window to {0, 0, 1280, 720}
 
-      open location "{{ idle_site }}"
+      open location "https://www.youtube.com/watch?v=9EE_ICC_wFw"
 
-      delay {{ delay }} 
+      delay 3 
 
       activate
     end if
