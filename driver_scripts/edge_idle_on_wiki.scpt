@@ -6,7 +6,7 @@ tell application "Microsoft Edge"
 
       open location "http://www.wikipedia.com/wiki/Alessandro_Volta"
 
-      delay 3 
+      delay 30 
 
       activate
     end if

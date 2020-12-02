@@ -20,7 +20,7 @@ tell application "Safari"
       end repeat
 
       tell document 1
-        repeat with i from 1 to 1 
+        repeat with i from 1 to 30 
 
           -- set the vertical scroll 
           repeat with y from 90 to 100 

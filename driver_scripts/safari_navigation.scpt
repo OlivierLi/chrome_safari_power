@@ -15,13 +15,13 @@ tell application "Safari"
       set bounds of w to {0, 0, 1280, 720}
 
       -- Each cycles takes about 2 mins. Aim for a test that takes an hour.
-      repeat with i from 1 to 1
+      repeat with i from 1 to 30
 
         set sites to {"http://cnn.com", "http://www.lapresse.ca", "http://www.nytimes.com", "http://theguardian.com"}
         repeat with site in sites
           open location site
 
-          delay 3 
+          delay 3600 
 
           set t to current tab of w
           close t 

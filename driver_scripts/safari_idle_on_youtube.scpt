@@ -7,7 +7,7 @@ tell application "Safari"
 
       open location "https://www.youtube.com/watch?v=9EE_ICC_wFw"
 
-      delay 3
+      delay 30
 
       activate
     end if
