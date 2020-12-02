@@ -6,7 +6,7 @@ set -eux
 source check_env.sh
 source ./compare.sh
 
-#CheckEnv
+CheckEnv
 
 # Local paths
 BIN=/Users/olivier/Library/Developer/Xcode/DerivedData/Power.Mac.BatteryDischarge-frtspoojsdrdsycbpuzpwyqlczdp/Build/Products/Debug/Power.Mac.BatteryDischarge
@@ -66,4 +66,3 @@ Record "Safari" $SCENARIO $SCENARIO "NONE"
 Record "Edge" $SCENARIO $SCENARIO "NONE"
 
 #TODO: Find a way to start the recording once everything is loaded. Or we continue ignoring all the first readings?
-#TODO: Add the generation as part of running discharge
