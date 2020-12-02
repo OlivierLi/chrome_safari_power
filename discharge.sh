@@ -6,7 +6,7 @@ set -eux
 source check_env.sh
 source ./compare.sh
 
-CheckEnv
+#CheckEnv
 
 # Local paths
 BIN=/Users/olivier/Library/Developer/Xcode/DerivedData/Power.Mac.BatteryDischarge-frtspoojsdrdsycbpuzpwyqlczdp/Build/Products/Debug/Power.Mac.BatteryDischarge
@@ -24,9 +24,6 @@ function KillALL(){
 
 function Record(){
   KillALL
-
-  # Start the collection of Power.Mac.BatteryDischarge
-  $BIN&
 
   # Run the scenario.
   OUTPUT_DIR=./results
@@ -64,5 +61,3 @@ SCENARIO="idle_on_youtube"
 Record "Chrome" $SCENARIO $SCENARIO "NONE"
 Record "Safari" $SCENARIO $SCENARIO "NONE"
 Record "Edge" $SCENARIO $SCENARIO "NONE"
-
-#TODO: Find a way to start the recording once everything is loaded. Or we continue ignoring all the first readings?
