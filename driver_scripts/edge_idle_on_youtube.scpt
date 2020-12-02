@@ -6,7 +6,7 @@ tell application "Microsoft Edge"
 
       open location "https://www.youtube.com/watch?v=9EE_ICC_wFw"
 
-      delay 30 
+      delay 3600 
 
       activate
     end if

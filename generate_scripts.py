@@ -22,7 +22,7 @@ def render(file_prefix, template_file):
 
     for render_target in render_targets:
         with open(render_target[0], 'w') as output:
-            output.write(template.render(idle_site=render_target[1], background_sites=background_sites, navigation_cycles=30, per_navigation_delay=3600, delay=30, browser=browser))
+            output.write(template.render(idle_site=render_target[1], background_sites=background_sites, navigation_cycles=30, per_navigation_delay=60, delay=3600, browser=browser))
 
 for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'alligned_timers']:
 

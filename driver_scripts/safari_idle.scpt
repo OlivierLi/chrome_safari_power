@@ -4,7 +4,7 @@ tell application "Safari"
       set w to first window
 
       set bounds of w to {0, 0, 1920, 1080}
-      delay 30
+      delay 3600
 
       activate
     end if

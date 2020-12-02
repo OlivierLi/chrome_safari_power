@@ -7,7 +7,7 @@ tell application "Safari"
 
       open location "http://www.wikipedia.com/wiki/Alessandro_Volta"
 
-      delay 30
+      delay 3600
 
       activate
     end if
