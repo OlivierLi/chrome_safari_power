@@ -6,7 +6,7 @@ set -eux
 source check_env.sh
 source ./compare.sh
 
-#CheckEnv
+CheckEnv
 
 # Local paths
 BIN=/Users/olivier/Library/Developer/Xcode/DerivedData/Power.Mac.BatteryDischarge-frtspoojsdrdsycbpuzpwyqlczdp/Build/Products/Debug/Power.Mac.BatteryDischarge
