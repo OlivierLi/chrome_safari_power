@@ -5,7 +5,7 @@ tell application "Chromium"
 
       set bounds of front window to {0, 0, 1920, 1080}
 
-      set base_url to "file:///Users/olivier/git/chrome_safari_power/pages/spam_tasks.html?interval=200"
+      set base_url to "file:///Users/$USER/git/chrome_safari_power/pages/spam_tasks.html?interval=200"
       
       set num_peers to 4
       repeat with i from 1 to num_peers 
