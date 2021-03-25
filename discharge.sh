@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-set -eux
+set -eu
 
 # Get the functions
 source check_env.sh

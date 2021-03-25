@@ -47,6 +47,13 @@ CheckDisplayValue()
   CompareValue $VALUE $2 $3
 }
 
+function CheckProgramNotRunning(){
+  if pgrep -x "$1" > /dev/null; then
+    echo "$2"
+    exit 127
+  fi
+}
+
 function CheckEnv()
 {
   # Use command: pmset -c gpuswitch 2 to allow dynamic gpu switching on charger.
@@ -67,5 +74,10 @@ function CheckEnv()
   fi
   CompareValue $(defaults read com.if.Amphetamine "Default Duration") "0" "Default session length in Amphetamine should be unlimited";
   CompareValue $(defaults read com.if.Amphetamine "Start Session At Launch") "1" "Amphetamine session should be default launched to avoid forgetting.";
+
+  # Verify that no terminals are running. They introduce too much overhead. (As measured with powermetrics)
+  CheckProgramNotRunning "Terminal" "Do not have a terminal opened. Use SSH.";
+  CheckProgramNotRunning "iTerm2" "Do not have a terminal opened. Use SSH.";
+
 
 }

@@ -45,7 +45,7 @@ function RecordPower()
   #$POWERLOG -resolution 100 -file $OUTPUT_DIR/$2/navigation.$i.csv -cmd osascript $3;
 
   # Start the collection of Power.Mac.BatteryDischarge
-  $BIN&
+  ./bin/Power.Mac.BatteryDischarge&
   osascript $3;
 }
 
