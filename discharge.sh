@@ -4,12 +4,46 @@ set -eu
 
 # Get the functions
 source check_env.sh
-source ./compare.sh
 
 CheckEnv
 
-# Local paths
-BIN=/Users/olivier/Library/Developer/Xcode/DerivedData/Power.Mac.BatteryDischarge-frtspoojsdrdsycbpuzpwyqlczdp/Build/Products/Debug/Power.Mac.BatteryDischarge
+# Whether the test should start the browser and wait for the process to
+# complete before running the scenario or whether the driver script should
+# start the browser and it should then be accounted in the power use.
+WAIT_FOR_STARTUP=true
+
+function RecordPower()
+{
+  mkdir -p $OUTPUT_DIR/$2
+
+  if [ "$WAIT_FOR_STARTUP" = "true" ]; then
+    if [ "$1" = "Safari" ]; then
+      # Safari needs this housekeeping to clear all open tabs otherwise
+      # they get restored.
+      open -a Safari
+      osascript ./driver_scripts/prep_safari.scpt;
+      open -a Safari
+    elif [ "$1" = "Chromium" ]; then
+      open $CHROMIUM_APP --args  --user-data-dir="/tmp/UserDataDir_$1/" --profile-directory="$4" $5
+    elif [ "$1" = "Chrome" ]; then
+      open -a 'Google Chrome' --args  --user-data-dir="/tmp/UserDataDir_$1/" --profile-directory="$4" $5
+    elif [ "$1" = "Edge" ]; then
+      open -a 'Microsoft Edge' --args  --user-data-dir="/tmp/UserDataDir_$1/" --profile-directory="$4" $5
+    else
+      echo "Invalid app chosen!";
+      exit 127
+    fi
+  fi
+
+  if [ "$6" != "NONE" ]
+  then
+    osascript $6;
+  fi
+
+  # Start the collection of Power.Mac.BatteryDischarge
+  ./bin/Power.Mac.BatteryDischarge&
+  osascript $3;
+}
 
 # Kill everything just to be sure.
 function KillALL(){
