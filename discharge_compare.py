@@ -70,8 +70,8 @@ def main():
     parser.add_argument("experiment_csv", help="The report containing the measurments of the experiment.")
     args = vars(parser.parse_args())
 
-    baseline = read_csv(args["baseline_dir"])
-    experiment = read_csv(args["experiment_dir"])
+    baseline = read_csv(args["baseline_csv"])
+    experiment = read_csv(args["experiment_csv"])
     compare(baseline, experiment)
 
 if __name__ == "__main__":
