@@ -71,6 +71,10 @@ function Record(){
 
 ./generate_scripts.py
 
+SCENARIO="zero_window"
+Record "Chrome" $SCENARIO $SCENARIO "NONE"
+Record "Safari" $SCENARIO $SCENARIO "NONE"
+
 SCENARIO="idle_on_wiki"
 Record "Chrome" $SCENARIO $SCENARIO "NONE"
 Record "Safari" $SCENARIO $SCENARIO "NONE"

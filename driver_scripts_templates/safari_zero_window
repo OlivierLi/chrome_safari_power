@@ -3,7 +3,12 @@ tell application "Safari"
       activate
       set w to first window
 
-      set bounds of w to {0, 0, 1920, 1080}
+      set bounds of w to {0, 0, 1280, 720}
+
+      open location "about:blank"
+      delay 10
+
+      close every window
 
       delay {{ delay }}
 
