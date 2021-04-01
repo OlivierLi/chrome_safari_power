@@ -53,7 +53,7 @@ def render(file_prefix, template_file, browser):
                 delay=3600, 
                 browser=browser))
 
-for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'alligned_timers']:
+for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'alligned_timers', 'zero_window']:
 
     with open("./driver_scripts_templates/"+template_file) as file_:
         template = Template(file_.read())
