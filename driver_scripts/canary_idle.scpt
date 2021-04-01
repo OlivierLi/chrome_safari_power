@@ -1,4 +1,4 @@
-tell application "{{ browser }}" 
+tell application "Google Chrome Canary" 
     if it is running then
       activate
 

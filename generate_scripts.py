@@ -3,7 +3,30 @@
 from jinja2 import Template
 import os
 
-def render(file_prefix, template_file):
+browsers_definition = {
+  "Chrome": {
+    "executable": "Google Chrome",
+    "identifier": "com.google.Chrome"
+  },
+  "Canary": {
+    "executable": "Google Chrome Canary",
+    "identifier": "com.google.Chrome.canary"
+  },
+  "Chromium": {
+    "executable": "Chromium",
+    "identifier": "org.chromium.Chromium"
+  },
+  "Edge": {
+    "executable": "Microsoft Edge",
+    "identifier": ""
+  },
+  "Safari": {
+    "executable": "Safari",
+    "identifier": "com.apple.Safari"
+  }
+}
+
+def render(file_prefix, template_file, browser):
     if file_prefix:
         file_prefix = file_prefix.replace(" ", "_") + "_"
         file_prefix = file_prefix.lower()
@@ -36,11 +59,12 @@ for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navi
         template = Template(file_.read())
         
         # Generate for all Chromium based browsers
-        for browser in ['Google Chrome', "Chromium", "Microsoft Edge"]:
+        for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
 
             # Small replacements to make files names make sense
-            file_prefix=browser.replace("Google ", "").replace("Microsoft ", "")
-            render(file_prefix, template_file)
+            file_prefix=browser
+            browser_executable = browsers_definition[browser]["executable"]
+            render(file_prefix, template_file, browser_executable)
 
     # Skip alligned timer case as chrome only
     if template_file == "alligned_timers":
@@ -51,5 +75,5 @@ for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navi
         template = Template(file_.read())
 
         # Generate for Safari
-        render("", template_file)
+        render("", template_file, "")
         

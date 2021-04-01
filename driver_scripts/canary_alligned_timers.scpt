@@ -1,4 +1,4 @@
-tell application "Google Chrome"
+tell application "Google Chrome Canary"
     if it is running then
       activate
       set w to first window

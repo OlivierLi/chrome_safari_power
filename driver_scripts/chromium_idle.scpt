@@ -1,4 +1,4 @@
-tell application " Chromium" 
+tell application "Chromium" 
     if it is running then
       activate
 
