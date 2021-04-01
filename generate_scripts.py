@@ -3,30 +3,9 @@
 from jinja2 import Template
 import os
 
-browsers_definition = {
-  "Chrome": {
-    "executable": "Google Chrome",
-    "identifier": "com.google.Chrome"
-  },
-  "Canary": {
-    "executable": "Google Chrome Canary",
-    "identifier": "com.google.Chrome.canary"
-  },
-  "Chromium": {
-    "executable": "Chromium",
-    "identifier": "org.chromium.Chromium"
-  },
-  "Edge": {
-    "executable": "Microsoft Edge",
-    "identifier": ""
-  },
-  "Safari": {
-    "executable": "Safari",
-    "identifier": "com.apple.Safari"
-  }
-}
+import utils
 
-def render(file_prefix, template_file, browser):
+def render(file_prefix, template_file, browser_executable):
     if file_prefix:
         file_prefix = file_prefix.replace(" ", "_") + "_"
         file_prefix = file_prefix.lower()
@@ -51,7 +30,7 @@ def render(file_prefix, template_file, browser):
                 navigation_cycles=30, 
                 per_navigation_delay=15, 
                 delay=3600, 
-                browser=browser))
+                browser=browser_executable))
 
 for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'alligned_timers', 'zero_window']:
 
@@ -60,11 +39,8 @@ for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navi
         
         # Generate for all Chromium based browsers
         for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
-
-            # Small replacements to make files names make sense
-            file_prefix=browser
-            browser_executable = browsers_definition[browser]["executable"]
-            render(file_prefix, template_file, browser_executable)
+            browser_executable = utils.browsers_definition[browser]["executable"]
+            render(browser, template_file, browser_executable)
 
     # Skip alligned timer case as chrome only
     if template_file == "alligned_timers":
