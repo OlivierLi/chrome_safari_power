@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import argparse
 import os
 import subprocess
@@ -42,12 +43,17 @@ def main():
                     help="Output dir")
   args = parser.parse_args()
   
-  KillBrowsers(utils.browsers_definition.keys())
+  #KillBrowsers(utils.browsers_definition.keys())
   subprocess.call(["sudo", "killall", "powermetrics"])
   os.makedirs("./{args.output_dir}", exist_ok=True)
 
-  subprocess.run(['bash', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks)
-  
+  try:
+    cp = subprocess.run(['bash', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
+    print(cp.stdout)
+  except subprocess.CalledProcessError as e:
+    print(e.stdout)
+    return
+
   Record("idle", "idle", args.output_dir)
   Record("canary_idle_on_wiki_slack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"])
   Record("canary_idle_on_wiki_noslack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"])

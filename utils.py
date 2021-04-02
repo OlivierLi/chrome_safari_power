@@ -15,7 +15,7 @@ browsers_definition = {
   },
   "Edge": {
     "executable": "Microsoft Edge",
-    "identifier": "" # TODO: figure out Edge identifier
+    "identifier": "com.microsoft.edgemac"
   },
   "Safari": {
     "executable": "Safari",
