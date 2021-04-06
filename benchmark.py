@@ -7,14 +7,18 @@ import sys
 
 import utils
 
-def signal_handler(sig, frame):
-  subprocess.call(["sudo", "killall", "powermetrics"])
-  sys.exit(0)
-
 def KillBrowsers(browser_list):
   for browser in browser_list:
     browser_executable = utils.browsers_definition[browser]['executable']
     subprocess.call(["killall", "-9", browser_executable])
+
+def KillPowermetrics():
+  # killall because sudo required
+  subprocess.call(["sudo", "killall", "powermetrics"])
+
+def SignalHandler(sig, frame):
+  KillPowermetrics()
+  sys.exit(0)
 
 def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
 
@@ -35,7 +39,7 @@ def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[]
 
   subprocess.call(["osascript", f'./driver_scripts/{driver_script}.scpt'])
   
-  subprocess.call(["sudo", "killall", "powermetrics"]) # killall because sudo required
+  KillPowermetrics()
   if browser is not None:
     KillBrowsers([browser])
 
@@ -47,10 +51,10 @@ def main():
                     help="Output dir")
   args = parser.parse_args()
 
-  signal.signal(signal.SIGINT, signal_handler)
+  signal.signal(signal.SIGINT, SignalHandler)
   
   KillBrowsers(utils.browsers_definition.keys())
-  subprocess.call(["sudo", "killall", "powermetrics"]) # killall because sudo required
+  KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
   try:
