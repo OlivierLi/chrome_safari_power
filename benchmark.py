@@ -43,7 +43,7 @@ def main():
                     help="Output dir")
   args = parser.parse_args()
   
-  #KillBrowsers(utils.browsers_definition.keys())
+  KillBrowsers(utils.browsers_definition.keys())
   subprocess.call(["sudo", "killall", "powermetrics"])
   os.makedirs("./{args.output_dir}", exist_ok=True)
 
