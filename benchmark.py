@@ -2,8 +2,14 @@
 import argparse
 import os
 import subprocess
+import signal
+import sys
 
 import utils
+
+def signal_handler(sig, frame):
+  subprocess.call(["sudo", "killall", "powermetrics"])
+  sys.exit(0)
 
 def KillBrowsers(browser_list):
   for browser in browser_list:
@@ -12,7 +18,7 @@ def KillBrowsers(browser_list):
 
 def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
 
-  with open("powermetrics.plist", "w") as f:
+  with open(f'./{output_dir}/{scenario_name}_powermetrics.plist', "w") as f:
     powermetrics_process = subprocess.Popen(["sudo", "powermetrics", "-f", "plist", "--samplers", "all", "--show-responsible-pid", "--show-process-gpu", "--show-process-energy", "-i", "60000"], stdout=f, stdin=subprocess.PIPE)
 
   if browser is not None:
@@ -29,11 +35,9 @@ def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[]
 
   subprocess.call(["osascript", f'./driver_scripts/{driver_script}.scpt'])
   
-  subprocess.call(["sudo", "killall", "powermetrics"])
+  subprocess.call(["sudo", "killall", "powermetrics"]) # killall because sudo required
   if browser is not None:
     KillBrowsers([browser])
-
-  os.rename("./powermetrics.plist", f'./{output_dir}/{scenario_name}_powermetrics.plist')
 
 def main():
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
@@ -42,16 +46,18 @@ def main():
   parser.add_argument("-o", dest="output_dir", required=True,
                     help="Output dir")
   args = parser.parse_args()
+
+  signal.signal(signal.SIGINT, signal_handler)
   
-  KillBrowsers(utils.browsers_definition.keys())
-  subprocess.call(["sudo", "killall", "powermetrics"])
-  os.makedirs("./{args.output_dir}", exist_ok=True)
+  #KillBrowsers(utils.browsers_definition.keys())
+  subprocess.call(["sudo", "killall", "powermetrics"]) # killall because sudo required
+  os.makedirs(f"{args.output_dir}", exist_ok=True)
 
   try:
-    cp = subprocess.run(['bash', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
-    print(cp.stdout)
+    check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
+    print("WARNING:", check_env.stdout.decode('ascii'))
   except subprocess.CalledProcessError as e:
-    print(e.stdout)
+    print("ERROR:", e.stdout.decode('ascii'))
     return
 
   Record("idle", "idle", args.output_dir)
