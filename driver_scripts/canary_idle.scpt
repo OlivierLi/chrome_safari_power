@@ -1,9 +1,9 @@
-tell application "Google Chrome" 
+tell application "Google Chrome Canary" 
     if it is running then
       activate
 
       set bounds of front window to {0, 0, 1920, 1080}
-      delay 3600 
+      delay 300
 
       activate
     end if

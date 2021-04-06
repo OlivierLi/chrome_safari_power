@@ -3,7 +3,9 @@
 from jinja2 import Template
 import os
 
-def render(file_prefix, template_file):
+import utils
+
+def render(file_prefix, template_file, browser_executable):
     if file_prefix:
         file_prefix = file_prefix.replace(" ", "_") + "_"
         file_prefix = file_prefix.lower()
@@ -28,7 +30,7 @@ def render(file_prefix, template_file):
                 navigation_cycles=30, 
                 per_navigation_delay=15, 
                 delay=3600, 
-                browser=browser))
+                browser=browser_executable))
 
 for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'alligned_timers', 'zero_window']:
 
@@ -36,11 +38,9 @@ for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navi
         template = Template(file_.read())
         
         # Generate for all Chromium based browsers
-        for browser in ['Google Chrome', "Chromium", "Microsoft Edge"]:
-
-            # Small replacements to make files names make sense
-            file_prefix=browser.replace("Google ", "").replace("Microsoft ", "")
-            render(file_prefix, template_file)
+        for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
+            browser_executable = utils.browsers_definition[browser]["executable"]
+            render(browser, template_file, browser_executable)
 
     # Skip alligned timer case as chrome only
     if template_file == "alligned_timers":
@@ -51,5 +51,5 @@ for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navi
         template = Template(file_.read())
 
         # Generate for Safari
-        render("", template_file)
+        render("", template_file, "")
         

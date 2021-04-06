@@ -1,4 +1,4 @@
-tell application "Chromium" 
+tell application "Microsoft Edge"
     if it is running then
       activate
       set w to first window

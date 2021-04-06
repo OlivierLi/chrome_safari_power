@@ -1,4 +1,4 @@
-tell application " {{ browser }}" 
+tell application "{{ browser }}" 
     if it is running then
       activate
 

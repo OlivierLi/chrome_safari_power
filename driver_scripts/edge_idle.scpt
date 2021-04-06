@@ -1,4 +1,4 @@
-tell application " Microsoft Edge" 
+tell application "Microsoft Edge" 
     if it is running then
       activate
 
