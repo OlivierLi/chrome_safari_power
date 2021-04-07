@@ -14,6 +14,7 @@ def KillBrowsers(browser_list):
 
 def KillPowermetrics():
   # killall because sudo required
+  print("Possibly enter password for killing power_metrics:")
   subprocess.call(["sudo", "killall", "powermetrics"])
 
 def SignalHandler(sig, frame):
@@ -23,6 +24,7 @@ def SignalHandler(sig, frame):
 def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
 
   with open(f'./{output_dir}/{scenario_name}_powermetrics.plist', "w") as f:
+    print("Possibly enter password for running power_metrics:")
     powermetrics_process = subprocess.Popen(["sudo", "powermetrics", "-f", "plist", "--samplers", "all", "--show-responsible-pid", "--show-process-gpu", "--show-process-energy", "-i", "60000"], stdout=f, stdin=subprocess.PIPE)
 
   if browser is not None:
@@ -71,3 +73,4 @@ def main():
 
 if __name__== "__main__" :
   main()
+

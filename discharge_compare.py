@@ -31,7 +31,7 @@ def clean(df):
     assert(df.shape[1] == 1)
 
     df = df.assign(z_score=df.apply(lambda x: (x - x.mean())/x.std()))
-    df = df[abs(df['z_score']) < 3]
+    df = df[abs(df['z_score']) < 2]
 
     cleaned = df.drop(columns=['z_score'])    
 
