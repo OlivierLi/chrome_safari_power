@@ -3,6 +3,8 @@ import argparse
 import plistlib
 import csv
 import pandas as pd
+from scipy import stats
+import numpy as np
 
 import utils
 
@@ -80,6 +82,7 @@ def Summary(results, filename):
   ]
   sum_columns = [
     "charge_delta", 
+    "backlight",
     "package_joules", 
     "energy_impact", 
     "pageins",
@@ -97,8 +100,11 @@ def Summary(results, filename):
     scenario_result = results[scenario].drop(0)
     nanoseconds_to_seconds = 1000000000.0
     scenario_result['elapsed_s'] = scenario_result['elapsed_ns'] / nanoseconds_to_seconds
-
     scenario_result[rate_columns] = scenario_result[rate_columns].mul(scenario_result['elapsed_s'], axis=0)
+    
+    scenario_result['charge_delta'] = scenario_result['charge_delta'].fillna(0)
+    scenario_result = scenario_result[(np.abs(stats.zscore(scenario_result[['elapsed_s', 'charge_delta', 'package_joules']])) < 3).all(axis=1)]
+    print(scenario_result)
     sums[scenario] = scenario_result[sum_columns].sum()
     sums[scenario]['elapsed_s'] = scenario_result['elapsed_s'].sum()
   summary_results = pd.DataFrame.from_dict(sums, orient='index')
@@ -142,7 +148,7 @@ def main():
       "wakeups_5000000"
     ]
     samples = pd.DataFrame.from_records(ReadResults(scenario["name"], browser), columns=columns)
-    samples.to_csv(f"{args.data_dir}/{scenario}.csv")
+    samples.to_csv(f"{args.data_dir}/{scenario['name']}.csv")
     print(scenario, samples)
     results[scenario["name"]] = samples
   Summary(results, f"{args.data_dir}/summary.csv")
