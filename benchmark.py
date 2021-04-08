@@ -30,7 +30,7 @@ def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[]
   if browser is not None:
     browser_executable = utils.browsers_definition[browser]['executable']
     if browser in ["Chrome", "Canary", "Edge"]:
-      subprocess.call(["open", "-a", browser_executable, "--args"] + extra_args)
+      subprocess.call(["open", "-a", browser_executable, "--args"] + ["--force-fieldtrials=BackgroundTracing/default83/", "--disable-stack-profiler"] + extra_args)
     elif browser == "Safari":
       subprocess.call(["open", "-a", browser_executable])
       subprocess.call(["osascript", './driver_scripts/prep_safari.scpt'])
@@ -49,7 +49,7 @@ def main():
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
   parser.add_argument('--no-checks', dest='no_checks', action='store_true',
                     help="Invalid environment doesn't throw")
-  parser.add_argument("-o", dest="output_dir", required=True,
+  parser.add_argument("output_dir",
                     help="Output dir")
   args = parser.parse_args()
 
@@ -66,10 +66,13 @@ def main():
     print("ERROR:", e.stdout.decode('ascii'))
     return
 
-  Record("idle", "idle", args.output_dir)
   Record("canary_idle_on_wiki_slack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"])
   Record("canary_idle_on_wiki_noslack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"])
+  Record("canary_idle_on_youtube_slack", "canary_idle_on_youtube", args.output_dir, browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"])
+  Record("canary_idle_on_youtube_noslack", "canary_idle_on_youtube", args.output_dir, browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"])
   Record("safari_idle_on_wiki", "safari_idle_on_wiki", args.output_dir, browser="Safari")
+  Record("safari_idle_on_youtube", "safari_idle_on_youtube", args.output_dir, browser="Safari")
+  Record("idle", "idle", args.output_dir)
 
 if __name__== "__main__" :
   main()
