@@ -21,12 +21,7 @@ def SignalHandler(sig, frame):
   KillPowermetrics()
   sys.exit(0)
 
-def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
-
-  with open(f'./{output_dir}/{scenario_name}_powermetrics.plist', "w") as f:
-    print("Possibly enter password for running power_metrics:")
-    powermetrics_process = subprocess.Popen(["sudo", "powermetrics", "-f", "plist", "--samplers", "all", "--show-responsible-pid", "--show-process-gpu", "--show-process-energy", "-i", "60000"], stdout=f, stdin=subprocess.PIPE)
-
+def RunScenario(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
   if browser is not None:
     browser_executable = utils.browsers_definition[browser]['executable']
     if browser in ["Chrome", "Canary", "Edge"]:
@@ -40,21 +35,31 @@ def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[]
     subprocess.call(["osascript", f'./driver_scripts/{background_script}.scpt'])
 
   subprocess.call(["osascript", f'./driver_scripts/{driver_script}.scpt'])
+
+def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
+  with open(f'./{output_dir}/{scenario_name}_powermetrics.plist', "w") as f:
+    print("Possibly enter password for running power_metrics:")
+    powermetrics_process = subprocess.Popen(["sudo", "powermetrics", "-f", "plist", "--samplers", "all", "--show-responsible-pid", "--show-process-gpu", "--show-process-energy", "-i", "60000"], stdout=f, stdin=subprocess.PIPE)
+
+  RunScenario(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None)
   
   KillPowermetrics()
+
   if browser is not None:
     KillBrowsers([browser])
 
 def main():
+  signal.signal(signal.SIGINT, SignalHandler)
+
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
   parser.add_argument('--no-checks', dest='no_checks', action='store_true',
                     help="Invalid environment doesn't throw")
   parser.add_argument("-o", dest="output_dir", required=True,
                     help="Output dir")
+  parser.add_argument('--profile', dest='run_profile', action='store_true',
+                    help="Invalid environment doesn't throw")
   args = parser.parse_args()
 
-  signal.signal(signal.SIGINT, SignalHandler)
-  
   KillBrowsers(utils.browsers_definition.keys())
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
