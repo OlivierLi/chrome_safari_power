@@ -21,32 +21,44 @@ def SignalHandler(sig, frame):
   KillPowermetrics()
   sys.exit(0)
 
-def RunScenario(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
-  if browser is not None:
-    browser_executable = utils.browsers_definition[browser]['executable']
-    if browser in ["Chrome", "Canary", "Edge"]:
-      subprocess.call(["open", "-a", browser_executable, "--args"] + extra_args)
-    elif browser == "Safari":
+def RunScenario(scenario_config):
+
+  if scenario_config.extra_args is None:
+    scenario_config.extra_args = []
+
+  if scenario_config.browser is not None:
+    browser_executable = utils.browsers_definition[scenario_config.browser]['executable']
+    if scenario_config.browser in ["Chrome", "Canary", "Edge"]:
+      subprocess.call(["open", "-a", browser_executable, "--args"] + scenario_config.extra_args)
+    elif scenario_config.browser == "Safari":
       subprocess.call(["open", "-a", browser_executable])
       subprocess.call(["osascript", './driver_scripts/prep_safari.scpt'])
-      subprocess.call(["open", "-a", browser_executable, "--args"] + extra_args)
+      subprocess.call(["open", "-a", browser_executable, "--args"] + scenario_config.extra_args)
 
-  if background_script is not None:
+  if scenario_config.background_script is not None:
     subprocess.call(["osascript", f'./driver_scripts/{background_script}.scpt'])
 
-  subprocess.call(["osascript", f'./driver_scripts/{driver_script}.scpt'])
+  subprocess.call(["osascript", f'./driver_scripts/{scenario_config.driver_script}.scpt'])
 
-def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None):
-  with open(f'./{output_dir}/{scenario_name}_powermetrics.plist', "w") as f:
+def Record(scenario_config, output_dir):
+  with open(f'./{output_dir}/{scenario_config.scenario_name}_powermetrics.plist', "w") as f:
     print("Possibly enter password for running power_metrics:")
     powermetrics_process = subprocess.Popen(["sudo", "powermetrics", "-f", "plist", "--samplers", "all", "--show-responsible-pid", "--show-process-gpu", "--show-process-energy", "-i", "60000"], stdout=f, stdin=subprocess.PIPE)
 
-  RunScenario(scenario_name, driver_script, output_dir, browser=None, extra_args=[], background_script=None)
+  RunScenario(scenario_config)
   
   KillPowermetrics()
 
-  if browser is not None:
-    KillBrowsers([browser])
+  if scenario_config.browser is not None:
+    KillBrowsers([scenario_config.browser])
+
+class ScenarioConfig:
+  def __init__(self, scenario_name, driver_script, browser, extra_args, background_script):
+    self.scenario_name = scenario_name
+    self.driver_script = driver_script
+    self.browser = browser
+    self.extra_args = extra_args
+    self.background_script = background_script
 
 def main():
   signal.signal(signal.SIGINT, SignalHandler)
@@ -57,13 +69,21 @@ def main():
   parser.add_argument("-o", dest="output_dir", required=True,
                     help="Output dir")
   parser.add_argument('--profile', dest='run_profile', action='store_true',
-                    help="Invalid environment doesn't throw")
+                    help="Run a profiling of the application for cpu use.")
+  parser.add_argument('--measure', dest='run_measure', action='store_true',
+                    help="Run measurments of the cpu use of the application.")
   args = parser.parse_args()
 
+  if args.run_profile and args.run_measure:
+      print("Cannot measure and profile at the same time, choose one.")
+      exit(-1)
+
+  # Start by making sure that no browsers are running which would affect the test.
   KillBrowsers(utils.browsers_definition.keys())
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
+  # Verify that we run in an environment condusive to proper profiling or measurments.
   try:
     check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
     print("WARNING:", check_env.stdout.decode('ascii'))
@@ -71,10 +91,11 @@ def main():
     print("ERROR:", e.stdout.decode('ascii'))
     return
 
-  Record("idle", "idle", args.output_dir)
-  Record("canary_idle_on_wiki_slack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"])
-  Record("canary_idle_on_wiki_noslack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"])
-  Record("safari_idle_on_wiki", "safari_idle_on_wiki", args.output_dir, browser="Safari")
+  if args.run_measure:
+    Record(ScenarioConfig("idle", "idle", None, None, None), args.output_dir)
+    Record(ScenarioConfig("canary_idle_on_wiki_slack", "canary_idle_on_wiki", browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
+    Record(ScenarioConfig("canary_idle_on_wiki_slack_noslack", "canary_idle_on_wiki", browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
+    Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
 
 if __name__== "__main__" :
   main()
