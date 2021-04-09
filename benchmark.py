@@ -4,6 +4,7 @@ import os
 import subprocess
 import signal
 import sys
+import psutil
 
 import utils
 
@@ -52,6 +53,32 @@ def Record(scenario_config, output_dir):
   if scenario_config.browser is not None:
     KillBrowsers([scenario_config.browser])
 
+def Profile(scenario_config, output_dir):
+  RunScenario(scenario_config)
+
+  if scenario_config.browser != "Chromium":
+    print("Only Chromium can be profiled!")
+    exit(-1)
+
+  browser_executable = utils.browsers_definition[scenario_config.browser]['executable']
+  processes = filter(lambda p: p.name() == browser_executable, psutil.process_iter())
+
+  browser_process = None
+  for process in processes:
+    if not browser_process:
+      browser_process = process
+    else:
+      print("Too many copies of the browser running, this is wrong")
+      exit(-1)
+
+  pids = [browser_process.pid]
+  children = browser_process.children(recursive=True)
+  for child in children:
+      pids.append(child.pid)
+
+  print("Chromium pids:")
+  print(pids)
+
 class ScenarioConfig:
   def __init__(self, scenario_name, driver_script, browser, extra_args, background_script):
     self.scenario_name = scenario_name
@@ -96,6 +123,9 @@ def main():
     Record(ScenarioConfig("canary_idle_on_wiki_slack", "canary_idle_on_wiki", browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
     Record(ScenarioConfig("canary_idle_on_wiki_slack_noslack", "canary_idle_on_wiki", browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
     Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
+
+  if args.run_profile:
+    Profile(ScenarioConfig("chromium_idle_on_wiki", "chromium_idle_on_wiki", browser="Chromium", extra_args=[], background_script=None), args.output_dir)
 
 if __name__== "__main__" :
   main()
