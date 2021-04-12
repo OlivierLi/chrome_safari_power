@@ -16,8 +16,9 @@ def KillBrowsers(browser_list):
 
 def KillPowermetrics():
   # killall because sudo required
-  print("Possibly enter password for killing power_metrics:")
-  subprocess.call(["sudo", "killall", "powermetrics"])
+  print("Possibly enter password for killing power_metrics/dtrace:")
+  subprocess.call(["sudo", "killall", "-9", "powermetrics"])
+  subprocess.call(["sudo", "killall", "-9", "dtrace"])
 
 def SignalHandler(sig, frame):
   KillPowermetrics()
@@ -100,14 +101,13 @@ def Profile(scenario_config, output_dir, dry_run=False):
     for pid in GetAllPids(browser_process):
       args = ['sudo', 'dtrace', '-p', f"{pid}", "-o", f"{output_dir}/{pid}.txt", '-n', f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"]
 
-      if not dry_run:
-        process = subprocess.Popen(args, env=my_env)
-
-      command = " ".join(args)
-
       if pid not in subprocess_to_pid:
-        subprocess_to_pid[pid] = command
+        if not dry_run:
+          process = subprocess.Popen(args, env=my_env)
+          subprocess_to_pid[pid] = process
         if dry_run:
+          command = " ".join(args)
+          subprocess_to_pid[pid] = command
           print(command)
  
   script_process.wait()
