@@ -30,7 +30,7 @@ def Record(scenario_name, driver_script, output_dir, browser=None, extra_args=[]
   if browser is not None:
     browser_executable = utils.browsers_definition[browser]['executable']
     if browser in ["Chrome", "Canary", "Edge"]:
-      subprocess.call(["open", "-a", browser_executable, "--args"] + ["--force-fieldtrials=BackgroundTracing/default83/", "--disable-stack-profiler"] + extra_args)
+      subprocess.call(["open", "-a", browser_executable, "--args"] + ["--enable-benchmarking", "--disable-stack-profiler"] + extra_args)
     elif browser == "Safari":
       subprocess.call(["open", "-a", browser_executable])
       subprocess.call(["osascript", './driver_scripts/prep_safari.scpt'])
