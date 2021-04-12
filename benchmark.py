@@ -98,8 +98,11 @@ def Profile(scenario_config, output_dir, dry_run=False):
     print("Looking for child processes")
 
     # Watch for new processes and follow those too.
+    # probe_def = f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"
+    probe_def = f"profile-1001/pid == {pid}/ {{ @[ustack()] = count(); }}"
     for pid in GetAllPids(browser_process):
-      args = ['sudo', 'dtrace', '-p', f"{pid}", "-o", f"{output_dir}/{pid}.txt", '-n', f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"]
+      args = ['sudo', 'dtrace', '-p', f"{pid}", "-o", f"{output_dir}/{pid}.txt", '-n', 
+             probe_def] 
 
       if pid not in subprocess_to_pid:
         if not dry_run:
@@ -111,6 +114,7 @@ def Profile(scenario_config, output_dir, dry_run=False):
           print(command)
  
   script_process.wait()
+  KillBrowsers([scenario_config.browser])
 
 class ScenarioConfig:
   def __init__(self, scenario_name, driver_script, browser, extra_args, background_script):
