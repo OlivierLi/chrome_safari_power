@@ -3,6 +3,8 @@ import argparse
 import plistlib
 import csv
 import pandas as pd
+from scipy import stats
+import numpy as np
 
 import utils
 
@@ -80,6 +82,7 @@ def Summary(results, filename):
   ]
   sum_columns = [
     "charge_delta", 
+    "backlight",
     "package_joules", 
     "energy_impact", 
     "pageins",
@@ -92,17 +95,28 @@ def Summary(results, filename):
     "wakeups_2000000",
     "wakeups_5000000"
   ]
-  sums = {}
+  scenario_summary = {}
   for scenario in results:
     scenario_result = results[scenario].drop(0)
     nanoseconds_to_seconds = 1000000000.0
     scenario_result['elapsed_s'] = scenario_result['elapsed_ns'] / nanoseconds_to_seconds
-
     scenario_result[rate_columns] = scenario_result[rate_columns].mul(scenario_result['elapsed_s'], axis=0)
-    sums[scenario] = scenario_result[sum_columns].sum()
-    sums[scenario]['elapsed_s'] = scenario_result['elapsed_s'].sum()
-  summary_results = pd.DataFrame.from_dict(sums, orient='index')
-  summary_results = summary_results.div(summary_results['elapsed_s'], axis=0)[sum_columns]
+    
+    # Replace Nan by 0.
+    scenario_result['charge_delta'] = scenario_result['charge_delta'].fillna(0)
+
+    # Remove all rows that has an outlier value for one of 'elapsed_s', 'charge_delta' or 'package_joules'.
+    # An outlier is a value with |z-score| > 3.
+    scenario_result = scenario_result[(np.abs(stats.zscore(scenario_result[['elapsed_s', 'charge_delta', 'package_joules']])) < 3).all(axis=1)]
+    print(scenario_result)
+
+    # Sum all rows for |sum_columns|.
+    print(scenario_result['charge_remaining'].iloc[0])
+    scenario_summary[scenario] = scenario_result[sum_columns].sum()
+    scenario_summary[scenario]['elapsed_s'] = scenario_result['elapsed_s'].sum()
+    scenario_summary[scenario]['total_discharge'] = scenario_result['charge_remaining'].iloc[0] - scenario_result['charge_remaining'].iloc[-1]
+  summary_results = pd.DataFrame.from_dict(scenario_summary, orient='index')
+  summary_results[sum_columns] = summary_results[sum_columns].div(summary_results['elapsed_s'], axis=0)
   print(summary_results)
   summary_results.to_csv(filename)
 
@@ -115,9 +129,9 @@ def main():
     {"name": "idle"},
     {"name": "canary_idle_on_youtube_slack", "browser": "Canary"},
     {"name": "canary_idle_on_youtube_noslack", "browser": "Canary"},
+    {"name": "safari_idle_on_youtube", "browser": "Safari"},
     {"name": "canary_idle_on_wiki_slack", "browser": "Canary"},
     {"name": "canary_idle_on_wiki_noslack", "browser": "Canary"},
-    {"name": "safari_idle_on_youtube", "browser": "Safari"},
     {"name": "safari_idle_on_wiki", "browser": "Safari"}
   ]
   results = {}
@@ -127,6 +141,8 @@ def main():
       browser = scenario["browser"]
     columns = [
       "elapsed_ns",
+      "battery_capacity",
+      "charge_remaining",
       "charge_delta", 
       "backlight",
       "package_joules", 
@@ -142,7 +158,7 @@ def main():
       "wakeups_5000000"
     ]
     samples = pd.DataFrame.from_records(ReadResults(scenario["name"], browser), columns=columns)
-    samples.to_csv(f"{args.data_dir}/{scenario}.csv")
+    samples.to_csv(f"{args.data_dir}/{scenario['name']}.csv")
     print(scenario, samples)
     results[scenario["name"]] = samples
   Summary(results, f"{args.data_dir}/summary.csv")
