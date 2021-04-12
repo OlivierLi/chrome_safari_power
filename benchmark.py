@@ -91,10 +91,9 @@ def main():
   signal.signal(signal.SIGINT, SignalHandler)
 
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
+  parser.add_argument("output_dir", help="Output dir")
   parser.add_argument('--no-checks', dest='no_checks', action='store_true',
                     help="Invalid environment doesn't throw")
-  parser.add_argument("output_dir",
-                    help="Output dir")
   parser.add_argument('--profile', dest='run_profile', action='store_true',
                     help="Run a profiling of the application for cpu use.")
   parser.add_argument('--measure', dest='run_measure', action='store_true',
@@ -118,15 +117,6 @@ def main():
     print("ERROR:", e.stdout.decode('ascii'))
     return
 
-<<<<<<< HEAD
-  Record("canary_idle_on_wiki_slack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"])
-  Record("canary_idle_on_wiki_noslack", "canary_idle_on_wiki", args.output_dir, browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"])
-  Record("canary_idle_on_youtube_slack", "canary_idle_on_youtube", args.output_dir, browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"])
-  Record("canary_idle_on_youtube_noslack", "canary_idle_on_youtube", args.output_dir, browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"])
-  Record("safari_idle_on_wiki", "safari_idle_on_wiki", args.output_dir, browser="Safari")
-  Record("safari_idle_on_youtube", "safari_idle_on_youtube", args.output_dir, browser="Safari")
-  Record("idle", "idle", args.output_dir)
-=======
   if args.run_measure:
     Record(ScenarioConfig("idle", "idle", None, None, None), args.output_dir)
     Record(ScenarioConfig("canary_idle_on_wiki_slack", "canary_idle_on_wiki", browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
@@ -135,7 +125,6 @@ def main():
 
   if args.run_profile:
     Profile(ScenarioConfig("chromium_idle_on_wiki", "chromium_idle_on_wiki", browser="Chromium", extra_args=[], background_script=None), args.output_dir)
->>>>>>> be6be96ae54ec21dca0d09ac1bf1d567f63db19e
 
 if __name__== "__main__" :
   main()
