@@ -30,7 +30,7 @@ def RunScenario(scenario_config):
   if scenario_config.browser is not None:
     browser_executable = utils.browsers_definition[scenario_config.browser]['executable']
     if scenario_config.browser in ["Chrome", "Canary", "Edge"]:
-      subprocess.call(["open", "-a", browser_executable, "--args"] + scenario_config.extra_args)
+      subprocess.call(["open", "-a", browser_executable, "--args"] + ["--enable-benchmarking", "--disable-stack-profiler"] + scenario_config.extra_args)
     elif scenario_config.browser == "Safari":
       subprocess.call(["open", "-a", browser_executable])
       subprocess.call(["osascript", './driver_scripts/prep_safari.scpt'])
@@ -91,10 +91,9 @@ def main():
   signal.signal(signal.SIGINT, SignalHandler)
 
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
+  parser.add_argument("output_dir", help="Output dir")
   parser.add_argument('--no-checks', dest='no_checks', action='store_true',
                     help="Invalid environment doesn't throw")
-  parser.add_argument("-o", dest="output_dir", required=True,
-                    help="Output dir")
   parser.add_argument('--profile', dest='run_profile', action='store_true',
                     help="Run a profiling of the application for cpu use.")
   parser.add_argument('--measure', dest='run_measure', action='store_true',
