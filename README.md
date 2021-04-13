@@ -24,3 +24,11 @@ Runnning the Chrome vs Chrome benchmarks require the use of signed builds. To do
 2. Find your code signing identity using `security find-identity -v -p codesigning`
 3. Follow the chrome signing [instructions](https://source.chromium.org/chromium/chromium/src/+/master:chrome/installer/mac/signing/README.md)
 4. Now you have a signed build!
+
+# Getting around sudo password
+To disable asking password for sudo commands (powermetrics).
+Run `sudo visudo` and add the last line to User specification (replacing <user>):
+
+root            ALL = (ALL) ALL
+%admin          ALL = (ALL) ALL
+<user>        ALL = (ALL) NOPASSWD:ALL
