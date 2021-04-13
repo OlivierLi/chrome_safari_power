@@ -1,6 +1,3 @@
-import os
-user_name = os.environ.get('USER')
-
 browsers_definition = {
   "Chrome": {
     "executable": "Google Chrome",
@@ -13,7 +10,6 @@ browsers_definition = {
     "identifier": "com.google.Chrome.canary"
   },
   "Chromium": {
-    "executable": f"/Users/{user_name}/git/chromium/src/out/Release/Chromium.app/Contents/MacOS/Chromium",
     "process_name": "Chromium",
     "identifier": "org.chromium.Chromium"
   },

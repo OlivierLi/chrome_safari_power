@@ -44,8 +44,15 @@ def RunScenario(scenario_config):
   driver_script_args = ["osascript", f'./driver_scripts/{scenario_config.driver_script}.scpt']
 
   process = subprocess.Popen(driver_script_args)
-  time.sleep(2)
+
+  # Wait for the browser to be started before continuing on.
+  browser_process_name = utils.browsers_definition[scenario_config.browser]['process_name']
+  while not FindBrowserProcess(browser_process_name):
+    time.sleep(0.100)
+    print(f"Waiting for {browser_process_name} to start")
+
   return process
+
 
 def Record(scenario_config, output_dir):
   with open(f'./{output_dir}/{scenario_config.scenario_name}_powermetrics.plist', "w") as f:
@@ -59,6 +66,21 @@ def Record(scenario_config, output_dir):
 
   if scenario_config.browser is not None:
     KillBrowsers([scenario_config.browser])
+
+
+def FindBrowserProcess(process_name):
+  processes = filter(lambda p: p.name() == process_name, psutil.process_iter())
+  browser_process = None
+
+  for process in processes:
+    if not browser_process:
+      browser_process = process
+    else:
+      print("Too many copies of the browser running, this is wrong")
+      exit(-1)
+  
+  return browser_process
+
 
 def GetAllPids(browser_process):
   pids = [browser_process.pid]
@@ -75,16 +97,7 @@ def Profile(scenario_config, output_dir, dry_run=False):
     print("Only Chromium can be profiled!")
     exit(-1)
 
-  browser_executable = utils.browsers_definition[scenario_config.browser]['process_name']
-  processes = filter(lambda p: p.name() == browser_executable, psutil.process_iter())
-
-  browser_process = None
-  for process in processes:
-    if not browser_process:
-      browser_process = process
-    else:
-      print("Too many copies of the browser running, this is wrong")
-      exit(-1)
+  browser_process = FindBrowserProcess(utils.browsers_definition[scenario_config.browser]['process_name'])
 
   # Set up the environment for correct dtrace execution.
   my_env = os.environ.copy()
@@ -92,15 +105,17 @@ def Profile(scenario_config, output_dir, dry_run=False):
 
   subprocess_to_pid = {}
 
+  # Keep looking for child processes as long as the scenario is running.
   while script_process.poll() is None:
 
+    # Let some time pass to limit the overhead of this script.
     time.sleep(0.100)
     print("Looking for child processes")
 
     # Watch for new processes and follow those too.
-    # probe_def = f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"
-    probe_def = f"profile-1001/pid == {pid}/ {{ @[ustack()] = count(); }}"
     for pid in GetAllPids(browser_process):
+      probe_def = f"profile-1001/pid == {pid}/ {{ @[ustack()] = count(); }}"
+      # probe_def = f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"
       args = ['sudo', 'dtrace', '-p', f"{pid}", "-o", f"{output_dir}/{pid}.txt", '-n', 
              probe_def] 
 
@@ -124,6 +139,10 @@ class ScenarioConfig:
     self.extra_args = extra_args
     self.background_script = background_script
 
+    if browser == "Chromium" and "executable" not in utils.browsers_definition["Chromium"].keys():
+        print("Cannot run a Chromium scenario without the executable defined")
+        exit(-1)
+
 def main():
   signal.signal(signal.SIGINT, SignalHandler)
 
@@ -136,7 +155,9 @@ def main():
   parser.add_argument('--measure', dest='run_measure', action='store_true',
                     help="Run measurments of the cpu use of the application.")
   parser.add_argument('--dry_run', dest='dry_run', action='store_true',
-                    help="Do not actually profile run commands but print them out..")
+                    help="Do not actually profile run commands but print them out.")
+  parser.add_argument('--chromium_executable', dest='chromium_executable', action='store',
+                    help="Absolute path to a locally built Chromium binary.")
   args = parser.parse_args()
 
   if args.run_measure and args.dry_run:
@@ -146,6 +167,9 @@ def main():
   if args.run_profile and args.run_measure:
       print("Cannot measure and profile at the same time, choose one.")
       exit(-1)
+
+  if args.chromium_executable:
+      utils.browsers_definition["Chromium"]["executable"] = args.chromium_executable
 
   # Start by making sure that no browsers are running which would affect the test.
   KillBrowsers(utils.browsers_definition.keys())
