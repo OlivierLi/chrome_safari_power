@@ -5,6 +5,9 @@
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
 
+## powermetrics_compare.py
+Parses and aggregates powermetrics results generated from benchmark.py --measure, generating a csv for each benchmark, and one for a high level summary.
+
 ## pages/
 This directory contains special webpages that can be loaded from disk in a navigator to verify certain behaviors.
 
