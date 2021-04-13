@@ -1,5 +1,6 @@
 # How to use these scripts
-* ./benchmakrk.py ./results
+* ./benchmakrk.py --measure ./results
+* ./benchmakrk.py --profile ./profile
 
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
