@@ -84,13 +84,18 @@ def FindBrowserProcess(process_name):
 
 def GetAllPids(browser_process):
   pids = [browser_process.pid]
-  children = browser_process.children(recursive=True)
+  try:
+    children = browser_process.children(recursive=True)
+  except psutil.NoSuchProcess:
+    return []
+
   for child in children:
       pids.append(child.pid)
 
   return pids
 
-def Profile(scenario_config, output_dir, dry_run=False):
+
+def Profile(scenario_config, output_dir, dry_run, profile_mode):
   script_process = RunScenario(scenario_config)
 
   if scenario_config.browser != "Chromium":
@@ -105,31 +110,40 @@ def Profile(scenario_config, output_dir, dry_run=False):
 
   subprocess_to_pid = {}
 
-  # Keep looking for child processes as long as the scenario is running.
-  while script_process.poll() is None:
+  with open(f'./{output_dir}/dtrace_log.txt', "w") as dtrace_log:
+    # Keep looking for child processes as long as the scenario is running.
+    while script_process.poll() is None:
 
-    # Let some time pass to limit the overhead of this script.
-    time.sleep(0.100)
-    print("Looking for child processes")
+      # Let some time pass to limit the overhead of this script.
+      time.sleep(0.100)
+      print("Looking for child processes")
 
-    # Watch for new processes and follow those too.
-    for pid in GetAllPids(browser_process):
-      probe_def = f"profile-1001/pid == {pid}/ {{ @[ustack()] = count(); }}"
-      # probe_def = f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"
-      args = ['sudo', 'dtrace', '-p', f"{pid}", "-o", f"{output_dir}/{pid}.txt", '-n', 
-             probe_def] 
+      # Watch for new processes and follow those too.
+      for pid in GetAllPids(browser_process):
+        if profile_mode == "wakeups":
+          probe_def = f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"
+        else:
+          probe_def = f"profile-1001/pid == {pid}/ {{ @[ustack()] = count(); }}"
 
-      if pid not in subprocess_to_pid:
-        if not dry_run:
-          process = subprocess.Popen(args, env=my_env)
-          subprocess_to_pid[pid] = process
-        if dry_run:
-          command = " ".join(args)
-          subprocess_to_pid[pid] = command
-          print(command)
+        args = ['sudo', 'dtrace', '-p', f"{pid}", "-o", f"{output_dir}/{pid}.txt", '-n', 
+               probe_def] 
+
+        if pid not in subprocess_to_pid:
+          if not dry_run:
+            process = subprocess.Popen(args, env=my_env, stdout=dtrace_log, stderr=dtrace_log)
+            subprocess_to_pid[pid] = process
+          if dry_run:
+            command = " ".join(args)
+            subprocess_to_pid[pid] = command
+            print(command)
  
   script_process.wait()
   KillBrowsers([scenario_config.browser])
+
+  for pid, dtrace_process in subprocess_to_pid.items():
+      time.sleep(0.100)
+      print(f"Waiting for dtrace hooked on {pid} to exit")
+      dtrace_process.wait()
 
 class ScenarioConfig:
   def __init__(self, scenario_name, driver_script, browser, extra_args, background_script):
@@ -150,22 +164,29 @@ def main():
   parser.add_argument("output_dir", help="Output dir")
   parser.add_argument('--no-checks', dest='no_checks', action='store_true',
                     help="Invalid environment doesn't throw")
-  parser.add_argument('--profile', dest='run_profile', action='store_true',
-                    help="Run a profiling of the application for cpu use.")
   parser.add_argument('--measure', dest='run_measure', action='store_true',
                     help="Run measurments of the cpu use of the application.")
+
+  # Profile related arguments
+  parser.add_argument('--profile_mode', dest='profile_mode', action='store',
+          help="Run a profiling of the application in one of two modes: wakeups, cpu_time.")
   parser.add_argument('--dry_run', dest='dry_run', action='store_true',
                     help="Do not actually profile run commands but print them out.")
   parser.add_argument('--chromium_executable', dest='chromium_executable', action='store',
                     help="Absolute path to a locally built Chromium binary.")
+
   args = parser.parse_args()
 
   if args.run_measure and args.dry_run:
       print("Dry running measure is not implemented !")
       exit(-1)
 
-  if args.run_profile and args.run_measure:
+  if args.profile_mode and args.run_measure:
       print("Cannot measure and profile at the same time, choose one.")
+      exit(-1)
+  
+  if args.profile_mode and args.profile_mode not in ["wakeups", "cpu_time"]:
+      print("When profiling choose between wakeups and cpu_time")
       exit(-1)
 
   if args.chromium_executable:
@@ -190,8 +211,8 @@ def main():
     Record(ScenarioConfig("canary_idle_on_wiki_slack_noslack", "canary_idle_on_wiki", browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
     Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
 
-  if args.run_profile:
-    Profile(ScenarioConfig("chromium_idle_on_wiki", "chromium_idle_on_wiki", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run)
+  if args.profile_mode:
+    Profile(ScenarioConfig("chromium_zero_window", "chromium_zero_window", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
 
 if __name__== "__main__" :
   main()
