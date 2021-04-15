@@ -1,6 +1,7 @@
 # How to use these scripts
 * ./benchmakrk.py --measure ./results
 * ./benchmakrk.py --profile ./profile
+* ./benchmark.py profile --profile_mode cpu_time --chromium_executable=./bin/Chromium.app
 
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
