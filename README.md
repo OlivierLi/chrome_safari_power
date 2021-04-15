@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Setting Up
 ## Python Virtual Environment
@@ -32,6 +33,20 @@ root ALL = (ALL) ALL
 %admin ALL = (ALL) ALL
 <user> ALL = (ALL) NOPASSWD:ALL
 ```
+=======
+# Environment setup
+
+## sudo
+Running benchmark.py in either measure or profile mode requires the user to have sudoer access. Running the whole script as `sudo` works but should be done with care. The scripts work when ran as normal users and attempt to run only the necessary commands as sudo. If sudo access of the shell expires while the script is running correct behavior is not guaranteed.
+
+## dtrace
+Running benchmark.py in profile mode uses `dtrace` to analyse the chromium processes. By default `dtrace` does not work well with [SIP](https://support.apple.com/en-us/HT204899). Disabling SIP as a whole is not recommended and instead should be done only for dtrace using these steps:
+
+* Reboot in recovery mode
+* Start a shell
+* Execute `csrutil enable --without dtrace --without debug`
+* Reboot
+>>>>>>> Update README.md
 
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
@@ -39,6 +54,11 @@ Use to execute different usage scenarios and measure their power use using power
 ./benchmakrk.py --measure ./results
 ./benchmark.py profile --profile_mode cpu_time --chromium_executable=./bin/Chromium.app
 ```
+
+Example commands:
+
+* ./benchmakrk.py --measure ./results
+* ./benchmark.py profile --profile_mode cpu_time --chromium_executable=./bin/Chromium.app
 
 ## powermetrics_compare.py
 Parses and aggregates powermetrics results generated from benchmark.py --measure, generating a csv for each benchmark, and one for a high level summary.
