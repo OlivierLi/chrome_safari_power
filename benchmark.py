@@ -109,7 +109,7 @@ def Profile(scenario_config, output_dir, dry_run, profile_mode):
   my_env = os.environ.copy()
   my_env["DYLD_SHARED_REGION"] = "avoid"
 
-  subprocess_to_pid = {}
+  pid_to_subprocess = {}
 
   with open(f'./{output_dir}/dtrace_log.txt', "w") as dtrace_log:
     # Keep looking for child processes as long as the scenario is running.
@@ -129,19 +129,19 @@ def Profile(scenario_config, output_dir, dry_run, profile_mode):
         args = ['sudo', 'dtrace', '-p', f"{pid}", "-o", f"{output_dir}/{pid}.txt", '-n', 
                probe_def] 
 
-        if pid not in subprocess_to_pid:
+        if pid not in pid_to_subprocess:
           if not dry_run:
             process = subprocess.Popen(args, env=my_env, stdout=dtrace_log, stderr=dtrace_log)
-            subprocess_to_pid[pid] = process
+            pid_to_subprocess[pid] = process
           if dry_run:
             command = " ".join(args)
-            subprocess_to_pid[pid] = command
+            pid_to_subprocess[pid] = command
             print(command)
  
   script_process.wait()
   KillBrowsers([scenario_config.browser])
 
-  for pid, dtrace_process in subprocess_to_pid.items():
+  for pid, dtrace_process in pid_to_subprocess.items():
       time.sleep(0.100)
       print(f"Waiting for dtrace hooked on {pid} to exit")
       dtrace_process.wait()
@@ -169,7 +169,7 @@ def main():
                     help="Run measurments of the cpu use of the application.")
 
   # Profile related arguments
-  parser.add_argument('--profile_mode', dest='profile_mode', action='store',
+  parser.add_argument('--profile_mode', dest='profile_mode', action='store', choices=["wakeups", "cpu_time"],
           help="Run a profiling of the application in one of two modes: wakeups, cpu_time.")
   parser.add_argument('--dry_run', dest='dry_run', action='store_true',
                     help="Do not actually profile run commands but print them out.")
@@ -184,10 +184,6 @@ def main():
 
   if args.profile_mode and args.run_measure:
       print("Cannot measure and profile at the same time, choose one.")
-      exit(-1)
-  
-  if args.profile_mode and args.profile_mode not in ["wakeups", "cpu_time"]:
-      print("When profiling choose between wakeups and cpu_time")
       exit(-1)
 
   if args.chromium_executable:
