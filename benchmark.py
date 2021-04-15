@@ -8,6 +8,7 @@ import psutil
 import time
 
 import utils
+import generate_scripts
 
 def KillBrowsers(browser_list):
   for browser in browser_list:
@@ -175,6 +176,10 @@ def main():
   KillBrowsers(utils.browsers_definition.keys())
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
+
+  # Generate the runner scripts
+  os.makedirs("driver_scripts", exist_ok=True)
+  generate_scripts.render_runner_scripts()
 
   # Verify that we run in an environment condusive to proper profiling or measurments.
   try:
