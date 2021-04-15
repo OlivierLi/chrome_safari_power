@@ -1,7 +1,7 @@
 from jinja2 import Template
 import os
 import utils
-from shutil import copyfile
+import shutil
 
 def render(file_prefix, template, template_file, process_name):
     if file_prefix:
@@ -54,9 +54,11 @@ def render_runner_scripts():
             render("", template, template_file, "")
         
 def generate_all():
+  shutil.rmtree("driver_scripts/", ignore_errors=True)
   os.makedirs("driver_scripts", exist_ok=True)
   render_runner_scripts()
-  shutil.copyfile("./driver_scripts_templates/idle.scpt", "./driver_scripts/")
-  shutil.copyfile("./driver_scripts_templates/finder.scpt", "./driver_scripts/")
-  shutil.copyfile("./driver_scripts_templates/prep_safari.scpt", "./driver_scripts/")
+
+  # Copy the files that don't need any substitutions. 
+  for script in ["idle", "prep_safari", "finder"]:
+      shutil.copyfile(f"./driver_scripts_templates/{script}.scpt", f"./driver_scripts/{script}.scpt")
 
