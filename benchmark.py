@@ -46,10 +46,11 @@ def RunScenario(scenario_config):
   process = subprocess.Popen(driver_script_args)
 
   # Wait for the browser to be started before continuing on.
-  browser_process_name = utils.browsers_definition[scenario_config.browser]['process_name']
-  while not FindBrowserProcess(browser_process_name):
-    time.sleep(0.100)
-    print(f"Waiting for {browser_process_name} to start")
+  if scenario_config.browser:
+    browser_process_name = utils.browsers_definition[scenario_config.browser]['process_name']
+    while not FindBrowserProcess(browser_process_name):
+      time.sleep(0.100)
+      print(f"Waiting for {browser_process_name} to start")
 
   return process
 
@@ -197,15 +198,15 @@ def main():
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
-  # Verify that we run in an environment condusive to proper profiling or measurments.
-  try:
-    check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
-    print("WARNING:", check_env.stdout.decode('ascii'))
-  except subprocess.CalledProcessError as e:
-    print("ERROR:", e.stdout.decode('ascii'))
-    return
-
   if args.run_measure:
+  # Verify that we run in an environment condusive to proper measurments.
+    try:
+      check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
+      print("WARNING:", check_env.stdout.decode('ascii'))
+    except subprocess.CalledProcessError as e:
+      print("ERROR:", e.stdout.decode('ascii'))
+      return
+
     Record(ScenarioConfig("idle", "idle", None, None, None), args.output_dir)
     Record(ScenarioConfig("canary_idle_on_wiki_slack", "canary_idle_on_wiki", browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
     Record(ScenarioConfig("canary_idle_on_wiki_slack_noslack", "canary_idle_on_wiki", browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)

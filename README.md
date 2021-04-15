@@ -33,14 +33,12 @@ root ALL = (ALL) ALL
 <user> ALL = (ALL) NOPASSWD:ALL
 ```
 
-# How to use these scripts
-```
-./benchmakrk.py --measure ./results
-./benchmakrk.py --profile ./profile
-```
-
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
+```
+./benchmakrk.py --measure ./results
+./benchmark.py profile --profile_mode cpu_time --chromium_executable=./bin/Chromium.app
+```
 
 ## powermetrics_compare.py
 Parses and aggregates powermetrics results generated from benchmark.py --measure, generating a csv for each benchmark, and one for a high level summary.
