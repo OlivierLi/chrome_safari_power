@@ -1,6 +1,7 @@
 from jinja2 import Template
 import os
 import utils
+from shutil import copyfile
 
 def render(file_prefix, template, template_file, process_name):
     if file_prefix:
@@ -52,4 +53,10 @@ def render_runner_scripts():
             # Generate for Safari
             render("", template, template_file, "")
         
-render_runner_scripts()
+def generate_all():
+  os.makedirs("driver_scripts", exist_ok=True)
+  render_runner_scripts()
+  shutil.copyfile("./driver_scripts_templates/idle.scpt", "./driver_scripts/")
+  shutil.copyfile("./driver_scripts_templates/finder.scpt", "./driver_scripts/")
+  shutil.copyfile("./driver_scripts_templates/prep_safari.scpt", "./driver_scripts/")
+
