@@ -1,12 +1,52 @@
+
+# Setting Up
+## Python Virtual Environment
+This project uses python [Virtual Environments](https://docs.python.org/3/tutorial/venv.html).
+
+Create the venv. Only needs to be done once.
+```
+python3 -m venv ./env
+```
+Activate the venv.
+```
+source ./env/bin/activate
+```
+Once the venv is activated, `python` refers to python3.
+Upgrade pip and install all python dependancies. 
+```
+python -m pip install -U pip
+python -m pip install -r requirements.txt
+```
+
+To deactivate venv.
+```
+deactivate
+```
+
+## Getting around sudo password
+To disable asking password for sudo commands (required by powermetrics).
+Run `sudo visudo` and add the last line to User specification (replacing `<user>`):
+```
+# root and users in group wheel can run anything on any machine as any user
+root ALL = (ALL) ALL
+%admin ALL = (ALL) ALL
+<user> ALL = (ALL) NOPASSWD:ALL
+```
+
 # How to use these scripts
-* ./benchmakrk.py --measure ./results
-* ./benchmakrk.py --profile ./profile
+```
+./benchmakrk.py --measure ./results
+./benchmakrk.py --profile ./profile
+```
 
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
 
 ## powermetrics_compare.py
 Parses and aggregates powermetrics results generated from benchmark.py --measure, generating a csv for each benchmark, and one for a high level summary.
+```
+./powermetrics_compare.py ./results
+```
 
 ## pages/
 This directory contains special webpages that can be loaded from disk in a navigator to verify certain behaviors.
