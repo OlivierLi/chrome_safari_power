@@ -32,7 +32,7 @@ def render(file_prefix, template, template_file, process_name):
 
 
 def render_runner_scripts():
-    for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'alligned_timers', 'zero_window']:
+    for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'aligned_timers', 'zero_window']:
 
         with open("./driver_scripts_templates/"+template_file) as file_:
             template = Template(file_.read())
@@ -42,8 +42,8 @@ def render_runner_scripts():
                 process_name = utils.browsers_definition[browser]["process_name"]
                 render(browser, template, template_file, process_name)
 
-        # Skip alligned timer case as chrome only
-        if template_file == "alligned_timers":
+        # Skip aligned timer case as chrome only
+        if template_file == "aligned_timers":
             continue
 
         template_file = "safari_"+template_file
