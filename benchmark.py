@@ -193,20 +193,20 @@ def main():
   if args.chromium_executable:
       utils.browsers_definition["Chromium"]["executable"] = args.chromium_executable
 
+  # Verify that we run in an environment condusive to proper measurments.
+  try:
+    check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
+    print("WARNING:", check_env.stdout.decode('ascii'))
+  except subprocess.CalledProcessError as e:
+    print("ERROR:", e.stdout.decode('ascii'))
+    return
+
   # Start by making sure that no browsers are running which would affect the test.
   KillBrowsers(utils.browsers_definition.keys())
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
   if args.run_measure:
-  # Verify that we run in an environment condusive to proper measurments.
-    try:
-      check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
-      print("WARNING:", check_env.stdout.decode('ascii'))
-    except subprocess.CalledProcessError as e:
-      print("ERROR:", e.stdout.decode('ascii'))
-      return
-
     Record(ScenarioConfig("idle", "idle", None, None, None), args.output_dir)
     Record(ScenarioConfig("canary_idle_on_wiki_slack", "canary_idle_on_wiki", browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
     Record(ScenarioConfig("canary_idle_on_wiki_slack_noslack", "canary_idle_on_wiki", browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
