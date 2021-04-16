@@ -8,6 +8,7 @@ import psutil
 import time
 
 import utils
+import generate_scripts
 
 def KillBrowsers(browser_list):
   for browser in browser_list:
@@ -189,7 +190,15 @@ def main():
   if args.chromium_executable:
       utils.browsers_definition["Chromium"]["executable"] = args.chromium_executable
 
-  # Verify that we run in an environment condusive to proper measurments.
+  # Start by making sure that no browsers are running which would affect the test.
+  KillBrowsers(utils.browsers_definition.keys())
+  KillPowermetrics()
+  os.makedirs(f"{args.output_dir}", exist_ok=True)
+
+  # Generate the runner scripts
+  generate_scripts.generate_all()
+
+  # Verify that we run in an environment condusive to proper profiling or measurments.
   try:
     check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
     print("WARNING:", check_env.stdout.decode('ascii'))

@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-
 from jinja2 import Template
 import os
-
 import utils
+import shutil
 
-def render(file_prefix, template_file, browser_executable):
+def render(file_prefix, template, template_file, process_name):
     if file_prefix:
         file_prefix = file_prefix.replace(" ", "_") + "_"
         file_prefix = file_prefix.lower()
@@ -30,26 +28,37 @@ def render(file_prefix, template_file, browser_executable):
                 navigation_cycles=30, 
                 per_navigation_delay=15, 
                 delay=3600, 
-                browser=browser_executable))
+                browser=process_name))
 
-for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'alligned_timers', 'zero_window']:
 
-    with open("./driver_scripts_templates/"+template_file) as file_:
-        template = Template(file_.read())
+def render_runner_scripts():
+    for template_file in ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']:
+
+        with open("./driver_scripts_templates/"+template_file) as file_:
+            template = Template(file_.read())
+            
+            # Generate for all Chromium based browsers
+            for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
+                process_name = utils.browsers_definition[browser]["process_name"]
+                render(browser, template, template_file, process_name)
+
+        # Skip aligned timer case as chrome only
+        if template_file == "aligned_timers":
+            continue
+
+        template_file = "safari_"+template_file
+        with open(f"./driver_scripts_templates/{template_file}") as file_:
+            template = Template(file_.read())
+
+            # Generate for Safari
+            render("", template, template_file, "")
         
-        # Generate for all Chromium based browsers
-        for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
-            browser_executable = utils.browsers_definition[browser]["executable"]
-            render(browser, template_file, browser_executable)
+def generate_all():
+  shutil.rmtree("driver_scripts/", ignore_errors=True)
+  os.makedirs("driver_scripts", exist_ok=True)
+  render_runner_scripts()
 
-    # Skip alligned timer case as chrome only
-    if template_file == "alligned_timers":
-        continue
+  # Copy the files that don't need any substitutions. 
+  for script in ["idle", "prep_safari", "finder"]:
+      shutil.copyfile(f"./driver_scripts_templates/{script}.scpt", f"./driver_scripts/{script}.scpt")
 
-    template_file = "safari_"+template_file
-    with open("./driver_scripts_templates/"+template_file) as file_:
-        template = Template(file_.read())
-
-        # Generate for Safari
-        render("", template_file, "")
-        

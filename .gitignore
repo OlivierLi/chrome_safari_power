@@ -138,3 +138,5 @@ battery_discharge.csv
 
 # Mac files
 .DS_STORE
+
+driver_scripts/
