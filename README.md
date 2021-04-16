@@ -40,9 +40,6 @@ Running benchmark.py in profile mode uses `dtrace` to analyse the chromium proce
 * Execute `csrutil enable --without dtrace --without debug`
 * Reboot
 
-=======
-=======
-
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
 ```
@@ -59,8 +56,8 @@ Parses and aggregates powermetrics results generated from benchmark.py --measure
 ## pages/
 This directory contains special webpages that can be loaded from disk in a navigator to verify certain behaviors.
 
-## driver_scripts/
-This directory contains scripts that can control the behaviour of Chrome or Safari to reproduce usage scenarios. The scripts will start the browsers if we want to include startup in the power capture. If not that can be done seperatly.
+## driver_scripts_templates/
+This directory contains templates that get converted into scripts at runtime. They can control the behaviour of Chromium based browsers or Safari to reproduce usage scenarios. The scripts will start the browsers if we want to include startup in the power capture. If not that can be done seperatly.
 
 ## check_env.sh
 This file makes functions available to allow the other scripts to verify they are running in a sane environment for battery life testing.
