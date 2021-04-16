@@ -32,7 +32,7 @@ def render(file_prefix, template, template_file, process_name):
 
 
 def render_runner_scripts():
-    for template_file in ['open_background', 'idle_on_site', 'idle', 'scroll', 'navigation', 'aligned_timers', 'zero_window']:
+    for template_file in ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']:
 
         with open("./driver_scripts_templates/"+template_file) as file_:
             template = Template(file_.read())
