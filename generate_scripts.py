@@ -47,7 +47,7 @@ def render_runner_scripts():
             continue
 
         template_file = "safari_"+template_file
-        with open("./driver_scripts_templates/"+template_file) as file_:
+        with open(f"./driver_scripts_templates/{template_file}") as file_:
             template = Template(file_.read())
 
             # Generate for Safari
