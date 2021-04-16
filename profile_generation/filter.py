@@ -6,6 +6,8 @@ import argparse
 # List of stacks we just want to drop to get nicer flames. Everything under them is dropped.
 ignored_frames = ["ThreadFunc", "ThreadControllerWithMessagePumpImpl::Do", "JobTask::Run", "base::RunLoop::Run", "base::Thread::Run", "RunWorker", "MessagePumpCFRunLoopBase", "::RunTask"]
 tokens_to_remove = ["Chromium Framework`", "libsystem_kernel.dylib`", "Security`" ]
+
+# Only for wakeups, in those cases a PostTask represents a context switch.
 drop_frames_with = ["PostTask"]
 
 def shorten_stack(stack):
