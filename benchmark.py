@@ -112,7 +112,7 @@ def Profile(scenario_config, output_dir, dry_run, profile_mode):
 
   pid_to_subprocess = {}
 
-  with open(f'./{output_dir}/dtrace_log.txt', "w") as dtrace_log:
+  with open(f'./dtrace_log.txt', "w") as dtrace_log:
     # Keep looking for child processes as long as the scenario is running.
     while script_process.poll() is None:
 
