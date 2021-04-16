@@ -53,14 +53,14 @@ def main(mode, stack_file):
     for row in csv_reader:
 
       # Filter out the frames we don't care about and all those under it.
-      if True: #mode == "cpu_time":
+      if mode == "cpu_time":
         row = shorten_stack(row)
 
         # If nothing is left after filtering.
         if not row:
           continue
 
-      # row = add_category_from_any_frame(row)
+        row = add_category_from_any_frame(row)
 
       # In the case of wakeups there are things we don't care about at all.
       if mode == "wakeups":
