@@ -53,6 +53,16 @@ Parses and aggregates powermetrics results generated from benchmark.py --measure
 ./powermetrics_compare.py ./results
 ```
 
+## profile_generation/
+This directory contains the scripts necessary to convert profile results into flamegraphs. 
+The scripts automatically generate an svg but also produce collapsed stack files that be opened in speedscope.app.
+
+The scripts expect only the directory of the profile results (an absolute path is needed).
+```
+./profile_generation/wakeups_dtrace.sh /home/git/chrome_safari_power/profile_results 
+./profile_generation/cpu_dtrace.sh /home/git/chrome_safari_power/profile_results 
+```
+
 ## pages/
 This directory contains special webpages that can be loaded from disk in a navigator to verify certain behaviors.
 
