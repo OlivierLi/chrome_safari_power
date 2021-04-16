@@ -63,7 +63,7 @@ This directory contains templates that get converted into scripts at runtime. Th
 This file makes functions available to allow the other scripts to verify they are running in a sane environment for battery life testing.
 
 # Signing your Chrome builds
-Runnning the Chrome vs Chrome benchmarks require the use of signed builds. To do that you need to follow the following instructions:
+Signing your Chromium build can make working with them easier in some cases, especially regarding os level access settings. To do that you need to follow the following instructions:
 
 1. Create a signing certificate in Xcode.
 2. Find your code signing identity using `security find-identity -v -p codesigning`
