@@ -1,4 +1,3 @@
-
 # Setting Up
 ## Python Virtual Environment
 This project uses python [Virtual Environments](https://docs.python.org/3/tutorial/venv.html).
@@ -33,14 +32,23 @@ root ALL = (ALL) ALL
 <user> ALL = (ALL) NOPASSWD:ALL
 ```
 
-# How to use these scripts
-```
-./benchmakrk.py --measure ./results
-./benchmakrk.py --profile ./profile
-```
+## dtrace
+Running benchmark.py in profile mode uses `dtrace` to analyse the chromium processes. By default `dtrace` does not work well with [SIP](https://support.apple.com/en-us/HT204899). Disabling SIP as a whole is not recommended and instead should be done only for dtrace using these steps:
+
+* Reboot in recovery mode
+* Start a shell
+* Execute `csrutil enable --without dtrace --without debug`
+* Reboot
+
+=======
+=======
 
 ## benchmark.py
 Use to execute different usage scenarios and measure their power use using powermetrics.
+```
+./benchmark.py ./results --measure 
+./benchmark.py ./profile --profile_mode cpu_time --chromium_executable=./bin/Chromium.app
+```
 
 ## powermetrics_compare.py
 Parses and aggregates powermetrics results generated from benchmark.py --measure, generating a csv for each benchmark, and one for a high level summary.
