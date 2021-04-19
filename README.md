@@ -48,8 +48,10 @@ Running benchmark.py in profile mode uses `dtrace` to analyse the chromium proce
 * Execute `csrutil enable --without dtrace --without debug`
 * Reboot
 
+# Using the different tools
+
 ## benchmark.py
-Use to execute different usage scenarios and measure their power use using powermetrics.
+Use to execute different usage scenarios and measure their power use or profile them.
 ```
 ./benchmark.py ./results --measure 
 ./benchmark.py ./profile --profile_mode cpu_time --chromium_executable=./bin/Chromium.app
@@ -62,7 +64,7 @@ Parses and aggregates powermetrics results generated from benchmark.py --measure
 ```
 
 ## profile_generation/
-This directory contains the scripts necessary to convert profile results into flamegraphs. 
+Parses and aggregates DTrace results generated from benchmark.py --profile into flamegraphs. 
 The scripts automatically generate an svg but also produce collapsed stack files that be opened in speedscope.app.
 
 The scripts expect only the directory of the profile results (an absolute path is needed).
@@ -70,6 +72,8 @@ The scripts expect only the directory of the profile results (an absolute path i
 ./profile_generation/wakeups_dtrace.sh /home/git/chrome_safari_power/profile_results 
 ./profile_generation/cpu_dtrace.sh /home/git/chrome_safari_power/profile_results 
 ```
+
+# More info
 
 ## pages/
 This directory contains special webpages that can be loaded from disk in a navigator to verify certain behaviors.
