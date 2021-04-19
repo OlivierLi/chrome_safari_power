@@ -1,3 +1,11 @@
+# What is this repo?
+
+This repo contains tools that allow you to run different browsers under specific usage scenarios and:
+
+* Measure their impact of system ressource use.
+* Profile the code that runs and/or is causing wake-ups. (chromium only)
+
+
 # Setting Up
 ## Python Virtual Environment
 This project uses python [Virtual Environments](https://docs.python.org/3/tutorial/venv.html).
