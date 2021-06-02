@@ -98,6 +98,8 @@ def Summary(results, filename):
   scenario_summary = {}
   for scenario in results:
     scenario_result = results[scenario].drop(0)
+    scenario_result = results[scenario].drop(0)
+
     nanoseconds_to_seconds = 1000000000.0
     scenario_result['elapsed_s'] = scenario_result['elapsed_ns'] / nanoseconds_to_seconds
     scenario_result[rate_columns] = scenario_result[rate_columns].mul(scenario_result['elapsed_s'], axis=0)
@@ -112,7 +114,7 @@ def Summary(results, filename):
     scenario_result = scenario_result[(np.abs(stats.zscore(scenario_result[['elapsed_s', 'charge_delta', 'package_joules']])) < 3).all(axis=1)]
 
     # Positive "discharge" is impossible. Remove.
-    # scenario_result = scenario_result.loc[scenario_result['charge_delta'] < 0]
+    scenario_result = scenario_result.loc[scenario_result['charge_delta'] < 0]
 
     # Remove samples for which the battery could not be acquired.
     nan_value = float("NaN")

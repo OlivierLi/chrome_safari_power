@@ -26,7 +26,7 @@ def render(file_prefix, template, template_file, process_name):
                 idle_site=render_target[1], 
                 background_sites=background_sites, 
                 navigation_cycles=30, 
-                per_navigation_delay=15, 
+                per_navigation_delay=30, 
                 delay=3600, 
                 browser=process_name))
 

@@ -218,7 +218,7 @@ def main():
 
   if args.run_measure:
     # Record(ScenarioConfig("idle", "idle", None, None, None), args.output_dir)
-    Record(ScenarioConfig("chrome_navigation", "chrome_navigation", browser="Chrome", extra_args=["--guest"], background_script=None), args.output_dir)
+    # Record(ScenarioConfig("chrome_navigation", "chrome_navigation", browser="Chrome", extra_args=["--guest"], background_script=None), args.output_dir)
     Record(ScenarioConfig("safari_navigation", "safari_navigation", browser="Safari", extra_args=None, background_script=None), args.output_dir)
     # Record(ScenarioConfig("chrome_idle_on_wiki", "chrome_idle_on_wiki", browser="Chrome", extra_args=["--guest"], background_script=None), args.output_dir)
     # Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
