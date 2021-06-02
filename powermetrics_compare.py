@@ -113,9 +113,6 @@ def Summary(results, filename):
     print(scenario_result["charge_delta"].mean())
     scenario_result = scenario_result[(np.abs(stats.zscore(scenario_result[['elapsed_s', 'charge_delta', 'package_joules']])) < 3).all(axis=1)]
 
-    # Positive "discharge" is impossible. Remove.
-    scenario_result = scenario_result.loc[scenario_result['charge_delta'] < 0]
-
     # Remove samples for which the battery could not be acquired.
     nan_value = float("NaN")
     scenario_result.replace("", nan_value, inplace=True)
