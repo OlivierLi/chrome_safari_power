@@ -1,0 +1,17 @@
+tell application "Safari" 
+    if it is running then
+      activate
+      set w to first window
+
+      set bounds of w to {0, 0, 1280, 720}
+
+      open location "{{ idle_site }}"
+      delay 5
+
+      set miniaturized of window 1 to true
+
+      delay {{ delay }}
+
+      activate
+    end if
+end tell

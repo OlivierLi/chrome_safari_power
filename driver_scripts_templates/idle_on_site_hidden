@@ -1,0 +1,17 @@
+tell application "{{ browser }}" 
+    if it is running then
+      activate
+
+      set bounds of front window to {0, 0, 1280, 720}
+
+      open location "{{ idle_site }}"
+
+      delay 5
+      set minimized of every window to true
+
+      delay {{ delay }} 
+
+      activate
+    end if
+
+end tell
