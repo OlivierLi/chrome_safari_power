@@ -116,10 +116,16 @@ def Summary(results, filename):
     scenario_summary[scenario] = scenario_result[sum_columns].sum()
     scenario_summary[scenario]['elapsed_s'] = scenario_result['elapsed_s'].sum()
     scenario_summary[scenario]['total_discharge'] = scenario_result['charge_remaining'].max() - scenario_result['charge_remaining'].min()
+    scenario_summary[scenario]['battery_life'] = scenario_result['battery_capacity'].max() / scenario_summary[scenario]['total_discharge'] * scenario_summary[scenario]['elapsed_s'] / 60 / 60
 
   summary_results = pd.DataFrame.from_dict(scenario_summary, orient='index')
   summary_results[sum_columns] = summary_results[sum_columns].div(summary_results['elapsed_s'], axis=0)
 
+  summary_results["sort_order"] = summary_results.index
+  summary_results.sort_values('sort_order', key=lambda col: col.str.lower(),inplace=True)
+  summary_results.drop(columns=["sort_order"], inplace=True)
+  
+  print(summary_results.columns)
   print(summary_results)
   summary_results.to_csv(filename)
 
@@ -172,16 +178,18 @@ def main():
       "wakeups_5000000"
     ]
 
-    print("Reading " + scenario["name"] + "...")
+    print("Reading " + scenario["name"] + "... ", end='')
     try:
       samples = pd.DataFrame.from_records(ReadResults(scenario["name"], browser), columns=columns)
     except:
-      print(scenario["name"] + " cannot be read. Check file!")
+      print(" Cannot be read. Check file!")
       continue
 
     if samples.empty:
-      print(scenario["name"] + " is empty. Check file!")
+      print("Empty or invalid. Check file!")
       continue
+    else:
+      print("Done!")
 
     samples.to_csv(f"{args.data_dir}/{scenario['name']}.csv")
     results[scenario["name"]] = samples
