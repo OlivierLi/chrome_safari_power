@@ -47,6 +47,7 @@ def ReadResults(scenario_name, browser):
         sample["charge_delta"]= info["battery"]["charge_delta"]
       sample["backlight"]= info["backlight"]["value"]
       sample["package_joules"]= info["processor"]["package_joules"]
+      sample["freq_ratio"]= info["processor"]["freq_ratio"]
 
       if browser is not None and browser_pid is None:
         browser_executable = utils.browsers_definition[browser]['executable']
@@ -87,6 +88,7 @@ def Summary(results, filename):
     "charge_delta", 
     "backlight",
     "package_joules", 
+    "freq_ratio", 
     "energy_impact", 
     "pageins",
     "intr_wakeups", 
@@ -113,7 +115,7 @@ def Summary(results, filename):
     # Sum all rows for |sum_columns|.
     scenario_summary[scenario] = scenario_result[sum_columns].sum()
     scenario_summary[scenario]['elapsed_s'] = scenario_result['elapsed_s'].sum()
-    scenario_summary[scenario]['total_discharge'] = scenario_result['charge_remaining'].iloc[0] - scenario_result['charge_remaining'].iloc[-1]
+    scenario_summary[scenario]['total_discharge'] = scenario_result['charge_remaining'].max() - scenario_result['charge_remaining'].min()
 
   summary_results = pd.DataFrame.from_dict(scenario_summary, orient='index')
   summary_results[sum_columns] = summary_results[sum_columns].div(summary_results['elapsed_s'], axis=0)
@@ -157,6 +159,7 @@ def main():
       "charge_delta", 
       "backlight",
       "package_joules", 
+      "freq_ratio", 
       "energy_impact", 
       "pageins",
       "intr_wakeups", 
