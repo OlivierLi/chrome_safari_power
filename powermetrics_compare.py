@@ -125,7 +125,6 @@ def Summary(results, filename):
   summary_results.sort_values('sort_order', key=lambda col: col.str.lower(),inplace=True)
   summary_results.drop(columns=["sort_order"], inplace=True)
   
-  print(summary_results.columns)
   print(summary_results)
   summary_results.to_csv(filename)
 
