@@ -121,9 +121,8 @@ def Summary(results, filename):
   summary_results = pd.DataFrame.from_dict(scenario_summary, orient='index')
   summary_results[sum_columns] = summary_results[sum_columns].div(summary_results['elapsed_s'], axis=0)
 
-  summary_results["sort_order"] = summary_results.index
-  summary_results.sort_values('sort_order', key=lambda col: col.str.lower(),inplace=True)
-  summary_results.drop(columns=["sort_order"], inplace=True)
+  summary_results["scenario"] = summary_results.index
+  summary_results.sort_values('scenario', key=lambda col: col.str.lower(),inplace=True)
   
   print(summary_results)
   summary_results.to_csv(filename)
