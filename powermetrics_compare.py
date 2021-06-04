@@ -47,7 +47,9 @@ def ReadResults(scenario_name, browser):
         sample["charge_delta"]= info["battery"]["charge_delta"]
       sample["backlight"]= info["backlight"]["value"]
       sample["package_joules"]= info["processor"]["package_joules"]
-      sample["freq_ratio"]= info["processor"]["freq_ratio"]
+      sample["freq_hz"]= info["processor"]["freq_hz"]
+      sample["package_C2_ratio"]= info["processor"]["packages"][0]["c_state_ratio"]
+      # sample["package_C2_ratio"]= info["processor"]["packages"][0]["cores"][1]["c_state_ratio"]
 
       if browser is not None and browser_pid is None:
         browser_executable = utils.browsers_definition[browser]['executable']
@@ -88,7 +90,8 @@ def Summary(results, filename):
     "charge_delta", 
     "backlight",
     "package_joules", 
-    "freq_ratio", 
+    "freq_hz", 
+    "package_C2_ratio",
     "energy_impact", 
     "pageins",
     "intr_wakeups", 
@@ -163,7 +166,8 @@ def main():
       "charge_delta", 
       "backlight",
       "package_joules", 
-      "freq_ratio", 
+      "freq_hz", 
+      "package_C2_ratio",
       "energy_impact", 
       "pageins",
       "intr_wakeups", 
