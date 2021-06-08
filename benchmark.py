@@ -108,7 +108,6 @@ def Profile(scenario_config, output_dir, dry_run, profile_mode):
     exit(-1)
 
   script_process = RunScenario(scenario_config)
-  time.sleep(5)
   browser_process = FindBrowserProcess(utils.browsers_definition[scenario_config.browser]['process_name'])
 
   # Set up the environment for correct dtrace execution.
@@ -224,10 +223,7 @@ def main():
     Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
 
   if args.profile_mode:
-    # Profile(ScenarioConfig("chromium_zero_window", "chromium_zero_window", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
-    Profile(ScenarioConfig("chromium_idle_on_wiki", "chromium_idle_on_wiki", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
-    # Profile(ScenarioConfig("chromium_navigation", "chromium_navigation", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
-    # Profile(ScenarioConfig("chromium_scroll", "chromium_scroll", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
+    Profile(ScenarioConfig("chromium_navigation", "chromium_navigation", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
 
 if __name__== "__main__" :
   main()
