@@ -32,19 +32,14 @@ def RunScenario(scenario_config):
 
   if scenario_config.browser is not None:
     browser_executable = utils.browsers_definition[scenario_config.browser]['executable']
-    if scenario_config.browser in ["Chromium", "Chrome", "Canary", "Edge"]:
+    if scenario_config.browser in ["Chrome", "Canary", "Edge"]:
       subprocess.call(["open", "-a", browser_executable, "--args"] + ["--enable-benchmarking", "--disable-stack-profiler"] + scenario_config.extra_args)
+    elif scenario_config.browser == "Chromium":
+      subprocess.Popen([browser_executable, "--enable-benchmarking", "--disable-stack-profiler"] + scenario_config.extra_args)
     elif scenario_config.browser == "Safari":
       subprocess.call(["open", "-a", browser_executable])
       subprocess.call(["osascript", './driver_scripts/prep_safari.scpt'])
       subprocess.call(["open", "-a", browser_executable, "--args"] + scenario_config.extra_args)
-
-  if scenario_config.background_script is not None:
-    subprocess.call(["osascript", f'./driver_scripts/{background_script}.scpt'])
-
-  driver_script_args = ["osascript", f'./driver_scripts/{scenario_config.driver_script}.scpt']
-
-  process = subprocess.Popen(driver_script_args)
 
   # Wait for the browser to be started before continuing on.
   if scenario_config.browser:
@@ -52,6 +47,16 @@ def RunScenario(scenario_config):
     while not FindBrowserProcess(browser_process_name):
       time.sleep(0.100)
       print(f"Waiting for {browser_process_name} to start")
+
+  # Wait for browser to be receptive to applescript commands which is not automatic if it was not started with "open".
+  # TODO: Actually try and ping pong AppleScript commands instead of just having a random wait.
+  time.sleep(5)
+
+  if scenario_config.background_script is not None:
+    subprocess.call(["osascript", f'./driver_scripts/{background_script}.scpt'])
+
+  driver_script_args = ["osascript", f'./driver_scripts/{scenario_config.driver_script}.scpt']
+  process = subprocess.Popen(driver_script_args)
 
   return process
 
@@ -98,12 +103,11 @@ def GetAllPids(browser_process):
 
 
 def Profile(scenario_config, output_dir, dry_run, profile_mode):
-  script_process = RunScenario(scenario_config)
-
   if scenario_config.browser != "Chromium":
     print("Only Chromium can be profiled!")
     exit(-1)
 
+  script_process = RunScenario(scenario_config)
   browser_process = FindBrowserProcess(utils.browsers_definition[scenario_config.browser]['process_name'])
 
   # Set up the environment for correct dtrace execution.
@@ -131,6 +135,7 @@ def Profile(scenario_config, output_dir, dry_run, profile_mode):
                probe_def] 
 
         if pid not in pid_to_subprocess:
+          print(f"Found new child!:{pid}")
           if not dry_run:
             process = subprocess.Popen(args, env=my_env, stdout=dtrace_log, stderr=dtrace_log)
             pid_to_subprocess[pid] = process
@@ -218,7 +223,7 @@ def main():
     Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
 
   if args.profile_mode:
-    Profile(ScenarioConfig("chromium_zero_window", "chromium_zero_window", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
+    Profile(ScenarioConfig("chromium_navigation", "chromium_navigation", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)
 
 if __name__== "__main__" :
   main()

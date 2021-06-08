@@ -86,7 +86,7 @@ def main(mode, stack_file):
 if __name__== "__main__" :
   parser = argparse.ArgumentParser(description='Flip stack order of a collapsed stack file.')
   parser.add_argument("--stack_file", help="Collapsed stack file.", required=True)
-  parser.add_argument("--mode", help="Whether to filter for wakeups or cpu time.", required=True, choices=["cpu_time", "wakeups"])
+  parser.add_argument("--mode", help="Whether to filter for wakeups or cpu time.", required=True, choices=["clean_only", "cpu_time", "wakeups"])
   args = parser.parse_args()
 
   main(args.mode, args.stack_file)
