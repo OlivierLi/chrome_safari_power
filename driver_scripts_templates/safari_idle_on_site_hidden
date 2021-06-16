@@ -4,9 +4,11 @@ tell application "Safari"
       set w to first window
 
       set bounds of w to {0, 0, 1280, 720}
-      delay 10
 
       open location "{{ idle_site }}"
+      delay 5
+
+      set miniaturized of window 1 to true
 
       delay {{ delay }}
 

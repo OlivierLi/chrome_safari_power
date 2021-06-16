@@ -5,7 +5,6 @@ import csv
 import pandas as pd
 from scipy import stats
 import numpy as np
-
 import utils
 
 def FindTask(tasks, process_name):
@@ -14,6 +13,7 @@ def FindTask(tasks, process_name):
       return task
   return None
 
+
 def FindChildrenTask(tasks, pid):
   children = []
   for task in tasks:
@@ -21,12 +21,14 @@ def FindChildrenTask(tasks, pid):
       children.append(task)
   return children
 
+ 
 def SumTaskMetric(tasks, key):
   value = 0
   for task in tasks:
     if key in task:
       value += task[key]
   return value
+
 
 def ReadResults(scenario_name, browser):
   with open(f"results/{scenario_name}_powermetrics.plist", "r") as fp:
@@ -45,6 +47,9 @@ def ReadResults(scenario_name, browser):
         sample["charge_delta"]= info["battery"]["charge_delta"]
       sample["backlight"]= info["backlight"]["value"]
       sample["package_joules"]= info["processor"]["package_joules"]
+      sample["freq_hz"]= info["processor"]["freq_hz"]
+      sample["package_C2_ratio"]= info["processor"]["packages"][0]["c_state_ratio"]
+      # sample["package_C2_ratio"]= info["processor"]["packages"][0]["cores"][1]["c_state_ratio"]
 
       if browser is not None and browser_pid is None:
         browser_executable = utils.browsers_definition[browser]['executable']
@@ -80,10 +85,13 @@ def Summary(results, filename):
   rate_columns = [
     "backlight"
   ]
+
   sum_columns = [
     "charge_delta", 
     "backlight",
     "package_joules", 
+    "freq_hz", 
+    "package_C2_ratio",
     "energy_impact", 
     "pageins",
     "intr_wakeups", 
@@ -95,28 +103,30 @@ def Summary(results, filename):
     "wakeups_2000000",
     "wakeups_5000000"
   ]
+
   scenario_summary = {}
+
   for scenario in results:
-    scenario_result = results[scenario].drop(0)
+    scenario_result = results[scenario]
     nanoseconds_to_seconds = 1000000000.0
     scenario_result['elapsed_s'] = scenario_result['elapsed_ns'] / nanoseconds_to_seconds
     scenario_result[rate_columns] = scenario_result[rate_columns].mul(scenario_result['elapsed_s'], axis=0)
     
-    # Replace Nan by 0.
+    # Replace NaN by 0.
     scenario_result['charge_delta'] = scenario_result['charge_delta'].fillna(0)
 
-    # Remove all rows that has an outlier value for one of 'elapsed_s', 'charge_delta' or 'package_joules'.
-    # An outlier is a value with |z-score| > 3.
-    scenario_result = scenario_result[(np.abs(stats.zscore(scenario_result[['elapsed_s', 'charge_delta', 'package_joules']])) < 3).all(axis=1)]
-    print(scenario_result)
-
     # Sum all rows for |sum_columns|.
-    print(scenario_result['charge_remaining'].iloc[0])
     scenario_summary[scenario] = scenario_result[sum_columns].sum()
     scenario_summary[scenario]['elapsed_s'] = scenario_result['elapsed_s'].sum()
-    scenario_summary[scenario]['total_discharge'] = scenario_result['charge_remaining'].iloc[0] - scenario_result['charge_remaining'].iloc[-1]
+    scenario_summary[scenario]['total_discharge'] = scenario_result['charge_remaining'].max() - scenario_result['charge_remaining'].min()
+    scenario_summary[scenario]['battery_life'] = scenario_result['battery_capacity'].max() / scenario_summary[scenario]['total_discharge'] * scenario_summary[scenario]['elapsed_s'] / 60 / 60
+
   summary_results = pd.DataFrame.from_dict(scenario_summary, orient='index')
   summary_results[sum_columns] = summary_results[sum_columns].div(summary_results['elapsed_s'], axis=0)
+
+  summary_results["scenario"] = summary_results.index
+  summary_results.sort_values('scenario', key=lambda col: col.str.lower(),inplace=True)
+  
   print(summary_results)
   summary_results.to_csv(filename)
 
@@ -132,8 +142,18 @@ def main():
     {"name": "safari_idle_on_youtube", "browser": "Safari"},
     {"name": "canary_idle_on_wiki_slack", "browser": "Canary"},
     {"name": "canary_idle_on_wiki_noslack", "browser": "Canary"},
-    {"name": "safari_idle_on_wiki", "browser": "Safari"}
+    {"name": "chrome_navigation", "browser": "Chrome"},
+    {"name": "safari_navigation", "browser": "Safari"},
+    {"name": "chrome_idle_on_wiki", "browser": "Chrome"},
+    {"name": "safari_idle_on_wiki", "browser": "Safari"},
+    {"name": "chrome_idle_on_wiki_hidden", "browser": "Chrome"},
+    {"name": "safari_idle_on_wiki_hidden", "browser": "Safari"},
+    {"name": "chrome_idle_on_youtube", "browser": "Chrome"},
+    {"name": "safari_idle_on_youtube", "browser": "Safari"},
+    {"name": "chrome_zero_window", "browser": "Chrome"},
+    {"name": "safari_zero_window", "browser": "Safari"}
   ]
+
   results = {}
   for scenario in scenarios:
     browser = None
@@ -146,6 +166,8 @@ def main():
       "charge_delta", 
       "backlight",
       "package_joules", 
+      "freq_hz", 
+      "package_C2_ratio",
       "energy_impact", 
       "pageins",
       "intr_wakeups", 
@@ -157,11 +179,25 @@ def main():
       "wakeups_2000000",
       "wakeups_5000000"
     ]
-    samples = pd.DataFrame.from_records(ReadResults(scenario["name"], browser), columns=columns)
+
+    print("Reading " + scenario["name"] + "... ", end='')
+    try:
+      samples = pd.DataFrame.from_records(ReadResults(scenario["name"], browser), columns=columns)
+    except:
+      print(" Cannot be read. Check file!")
+      continue
+
+    if samples.empty:
+      print("Empty or invalid. Check file!")
+      continue
+    else:
+      print("Done!")
+
     samples.to_csv(f"{args.data_dir}/{scenario['name']}.csv")
-    print(scenario, samples)
     results[scenario["name"]] = samples
-  Summary(results, f"{args.data_dir}/summary.csv")
+
+  if results:
+    Summary(results, f"{args.data_dir}/summary.csv")
 
 if __name__== "__main__" :
   main()

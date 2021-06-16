@@ -181,6 +181,10 @@ def main():
                     help="Do not actually profile run commands but print them out.")
   parser.add_argument('--chromium_executable', dest='chromium_executable', action='store',
                     help="Absolute path to a locally built Chromium binary.")
+  parser.add_argument('--meet-meeting-id', dest='meet_meeting_id', action='store',
+                    help='The meeting ID to use for the Meet benchmarks')
+  parser.add_argument('--chrome-user-dir', dest='chrome_user_dir', action='store',
+                    help='The user data dir to pass to Chrome via --user-data-dir')  
 
   args = parser.parse_args()
 
@@ -201,7 +205,7 @@ def main():
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
   # Generate the runner scripts
-  generate_scripts.generate_all()
+  generate_scripts.generate_all(args.meet_meeting_id)
 
   # Verify that we run in an environment condusive to proper profiling or measurments.
   try:
@@ -216,11 +220,28 @@ def main():
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
+  if args.chrome_user_dir:
+      chrome_extra_args = ["--user-data-dir=%s" % args.chrome_user_dir]
+  else:
+      chrome_extra_args = ["--guest"]
+
   if args.run_measure:
-    Record(ScenarioConfig("idle", "idle", None, None, None), args.output_dir)
-    Record(ScenarioConfig("canary_idle_on_wiki_slack", "canary_idle_on_wiki", browser="Canary", extra_args=["--enable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
-    Record(ScenarioConfig("canary_idle_on_wiki_slack_noslack", "canary_idle_on_wiki", browser="Canary", extra_args=["--disable-features=LudicrousTimerSlack"], background_script=None), args.output_dir)
-    Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
+      # If a Meet meeting ID has been specified then it probably means that we need to run the Meet benchmarks.
+      if args.meet_meeting_id:
+          Record(ScenarioConfig("chrome_meet", "chrome_meet", browser="Chrome", extra_args=chrome_extra_args, background_script=None), args.output_dir)
+          Record(ScenarioConfig("safari_meet", "safari_meet", browser="Safari", extra_args=None, background_script=None), args.output_dir)
+      else:
+          # Record(ScenarioConfig("idle", "idle", None, None, None), args.output_dir)
+          Record(ScenarioConfig("chrome_navigation", "chrome_navigation", browser="Chrome", extra_args=chrome_extra_args, background_script=None), args.output_dir)
+          Record(ScenarioConfig("safari_navigation", "safari_navigation", browser="Safari", extra_args=None, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("chrome_idle_on_wiki", "chrome_idle_on_wiki", browser="Chrome", extra_args=chrome_extra_args, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("safari_idle_on_wiki", "safari_idle_on_wiki", browser="Safari", extra_args=None, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("chrome_idle_on_wiki_hidden", "chrome_idle_on_wiki_hidden", browser="Chrome", extra_args=chrome_extra_args, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("safari_idle_on_wiki_hidden", "safari_idle_on_wiki_hidden", browser="Safari", extra_args=None, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("chrome_zero_window", "chrome_zero_window", browser="Chrome", extra_args=chrome_extra_args, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("safari_zero_window", "safari_zero_window", browser="Safari", extra_args=None, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("chrome_idle_on_youtube", "chrome_idle_on_youtube", browser="Chrome", extra_args=chrome_extra_args, background_script=None), args.output_dir)
+          # Record(ScenarioConfig("safari_idle_on_youtube", "safari_idle_on_youtube", browser="Safari", extra_args=None, background_script=None), args.output_dir)
 
   if args.profile_mode:
     Profile(ScenarioConfig("chromium_navigation", "chromium_navigation", browser="Chromium", extra_args=[], background_script=None), args.output_dir, dry_run=args.dry_run, profile_mode=args.profile_mode)

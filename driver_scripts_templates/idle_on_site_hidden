@@ -4,9 +4,10 @@ tell application "{{ browser }}"
 
       set bounds of front window to {0, 0, 1280, 720}
 
-      delay 10
-
       open location "{{ idle_site }}"
+
+      delay 5
+      set minimized of every window to true
 
       delay {{ delay }} 
 
