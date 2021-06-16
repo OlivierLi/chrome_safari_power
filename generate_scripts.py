@@ -3,7 +3,7 @@ import os
 import utils
 import shutil
 
-def render(file_prefix, template, template_file, process_name):
+def render(file_prefix, template, template_file, process_name, meet_meeting_id=None):
     if file_prefix:
         file_prefix = file_prefix.replace(" ", "_") + "_"
         file_prefix = file_prefix.lower()
@@ -28,11 +28,15 @@ def render(file_prefix, template, template_file, process_name):
                 navigation_cycles=30, 
                 per_navigation_delay=30, 
                 delay=3600, 
-                browser=process_name))
+                browser=process_name,
+                meeting_id=meet_meeting_id))
 
 
-def render_runner_scripts():
-    for template_file in ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']:
+def render_runner_scripts(meet_meeting_id=None):
+    template_files = ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']
+    if meet_meeting_id != None:
+        template_files.append('meet')
+    for template_file in template_files:
 
         with open("./driver_scripts_templates/"+template_file) as file_:
             template = Template(file_.read())
@@ -40,7 +44,7 @@ def render_runner_scripts():
             # Generate for all Chromium based browsers
             for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
                 process_name = utils.browsers_definition[browser]["process_name"]
-                render(browser, template, template_file, process_name)
+                render(browser, template, template_file, process_name, meet_meeting_id)
 
         # Skip aligned timer case as chrome only
         if template_file == "aligned_timers":
@@ -51,14 +55,13 @@ def render_runner_scripts():
             template = Template(file_.read())
 
             # Generate for Safari
-            render("", template, template_file, "")
+            render("", template, template_file, "", meet_meeting_id)
         
-def generate_all():
+def generate_all(meet_meeting_id=None):
   shutil.rmtree("driver_scripts/", ignore_errors=True)
   os.makedirs("driver_scripts", exist_ok=True)
-  render_runner_scripts()
+  render_runner_scripts(meet_meeting_id)
 
   # Copy the files that don't need any substitutions. 
   for script in ["idle", "prep_safari", "finder"]:
       shutil.copyfile(f"./driver_scripts_templates/{script}.scpt", f"./driver_scripts/{script}.scpt")
-
