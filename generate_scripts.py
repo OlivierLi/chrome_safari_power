@@ -5,7 +5,13 @@ import os
 import utils
 import shutil
 
+""" Script to generate browser driver scripts from templates.
 
+The generated scripts can be used to have browsers go 
+through scenarios in a repeatable way.
+"""
+
+# Render a single scenario script.
 def render(file_prefix, template, template_file, process_name, meet_meeting_id=None):
   if file_prefix:
     file_prefix = file_prefix.replace(" ", "_") + "_"
@@ -35,8 +41,10 @@ def render(file_prefix, template, template_file, process_name, meet_meeting_id=N
           meeting_id=meet_meeting_id))
 
 
+# Render all scenario driver scripts for all browsers (if applicable).
 def render_runner_scripts(meet_meeting_id=None):
   template_files = ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']
+
   if meet_meeting_id != None:
     template_files.append('meet')
 
@@ -50,7 +58,7 @@ def render_runner_scripts(meet_meeting_id=None):
         process_name = utils.browsers_definition[browser]["process_name"]
         render(browser, template, template_file, process_name, meet_meeting_id)
 
-      # Skip aligned timer case as chrome only
+      # Skip aligned timer case as chromium only
       if template_file == "aligned_timers":
         continue
 
@@ -62,9 +70,12 @@ def render_runner_scripts(meet_meeting_id=None):
         render("", template, template_file, "", meet_meeting_id)
 
 
-def generate_all(meet_meeting_id=None):
+def main(meet_meeting_id=None):
+  # Delete all existing generated scripts. Scripts should not be modified by hand.
   shutil.rmtree("driver_scripts/", ignore_errors=True)
   os.makedirs("driver_scripts", exist_ok=True)
+
+  # Generate scripts for all scenarios.
   render_runner_scripts(meet_meeting_id)
 
   # Copy the files that don't need any substitutions. 
@@ -73,4 +84,4 @@ def generate_all(meet_meeting_id=None):
 
 
 if __name__== "__main__" :
-  generate_all()
+  main()
