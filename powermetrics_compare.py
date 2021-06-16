@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import argparse
 import plistlib
 import csv
@@ -135,27 +136,8 @@ def main():
   parser.add_argument("data_dir", help="Data dir")
   args = parser.parse_args()
 
-  scenarios = [
-    {"name": "idle"},
-    {"name": "canary_idle_on_youtube_slack", "browser": "Canary"},
-    {"name": "canary_idle_on_youtube_noslack", "browser": "Canary"},
-    {"name": "safari_idle_on_youtube", "browser": "Safari"},
-    {"name": "canary_idle_on_wiki_slack", "browser": "Canary"},
-    {"name": "canary_idle_on_wiki_noslack", "browser": "Canary"},
-    {"name": "chrome_navigation", "browser": "Chrome"},
-    {"name": "safari_navigation", "browser": "Safari"},
-    {"name": "chrome_idle_on_wiki", "browser": "Chrome"},
-    {"name": "safari_idle_on_wiki", "browser": "Safari"},
-    {"name": "chrome_idle_on_wiki_hidden", "browser": "Chrome"},
-    {"name": "safari_idle_on_wiki_hidden", "browser": "Safari"},
-    {"name": "chrome_idle_on_youtube", "browser": "Chrome"},
-    {"name": "safari_idle_on_youtube", "browser": "Safari"},
-    {"name": "chrome_zero_window", "browser": "Chrome"},
-    {"name": "safari_zero_window", "browser": "Safari"}
-  ]
-
   results = {}
-  for scenario in scenarios:
+  for scenario in utils.scenarios:
     browser = None
     if "browser" in scenario:
       browser = scenario["browser"]
