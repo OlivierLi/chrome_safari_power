@@ -1,12 +1,15 @@
+#!/usr/bin/python3
+
 from jinja2 import Template
 import os
 import utils
 import shutil
 
+
 def render(file_prefix, template, template_file, process_name, meet_meeting_id=None):
-    if file_prefix:
-        file_prefix = file_prefix.replace(" ", "_") + "_"
-        file_prefix = file_prefix.lower()
+  if file_prefix:
+    file_prefix = file_prefix.replace(" ", "_") + "_"
+    file_prefix = file_prefix.lower()
 
     background_sites = '"google.com", "youtube.com","tmall.com","baidu.com","qq.com","sohu.com","amazon.com","taobao.com","facebook.com","360.cn","yahoo.com","jd.com","wikipedia.org","zoom.us","sina.com.cn","weibo.com","live.com","xinhuanet.com","reddit.com","microsoft.com","netflix.com","office.com","microsoftonline.com","okezone.com","vk.com","myshopify.com","panda.tv","alipay.com","csdn.net","instagram.com","zhanqi.tv","yahoo.co.jp","ebay.com","apple.com","bing.com","bongacams.com","google.com.hk","naver.com","stackoverflow.com","aliexpress.com","twitch.tv","amazon.co.jp","amazon.in","adobe.com","tianya.cn","huanqiu.com","aparat.com","amazonaws.com","twitter.com","yy.com"'
     idle_sites = ["http://www.wikipedia.com/wiki/Alessandro_Volta", "https://www.youtube.com/watch?v=9EE_ICC_wFw?autoplay=1"]
@@ -17,46 +20,48 @@ def render(file_prefix, template, template_file, process_name, meet_meeting_id=N
     render_targets = [(output_filename ,"wiki")]
 
     if template_file.endswith("idle_on_site"):
-        render_targets[0] = (output_filename.replace("site","wiki"),  idle_sites[0])
-        render_targets.append((output_filename.replace("site","youtube"),  idle_sites[1]))
+      render_targets[0] = (output_filename.replace("site","wiki"),  idle_sites[0])
+      render_targets.append((output_filename.replace("site","youtube"),  idle_sites[1]))
 
     for render_target in render_targets:
-        with open(render_target[0], 'w') as output:
-            output.write(template.render(
-                idle_site=render_target[1], 
-                background_sites=background_sites, 
-                navigation_cycles=30, 
-                per_navigation_delay=30, 
-                delay=3600, 
-                browser=process_name,
-                meeting_id=meet_meeting_id))
+      with open(render_target[0], 'w') as output:
+        output.write(template.render(
+          idle_site=render_target[1], 
+          background_sites=background_sites, 
+          navigation_cycles=30, 
+          per_navigation_delay=30, 
+          delay=3600, 
+          browser=process_name,
+          meeting_id=meet_meeting_id))
 
 
 def render_runner_scripts(meet_meeting_id=None):
-    template_files = ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']
-    if meet_meeting_id != None:
-        template_files.append('meet')
-    for template_file in template_files:
+  template_files = ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']
+  if meet_meeting_id != None:
+    template_files.append('meet')
 
-        with open("./driver_scripts_templates/"+template_file) as file_:
-            template = Template(file_.read())
-            
-            # Generate for all Chromium based browsers
-            for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
-                process_name = utils.browsers_definition[browser]["process_name"]
-                render(browser, template, template_file, process_name, meet_meeting_id)
+  for template_file in template_files:
 
-        # Skip aligned timer case as chrome only
-        if template_file == "aligned_timers":
-            continue
+    with open("./driver_scripts_templates/"+template_file) as file_:
+      template = Template(file_.read())
 
-        template_file = "safari_"+template_file
-        with open(f"./driver_scripts_templates/{template_file}") as file_:
-            template = Template(file_.read())
+      # Generate for all Chromium based browsers
+      for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
+        process_name = utils.browsers_definition[browser]["process_name"]
+        render(browser, template, template_file, process_name, meet_meeting_id)
 
-            # Generate for Safari
-            render("", template, template_file, "", meet_meeting_id)
-        
+      # Skip aligned timer case as chrome only
+      if template_file == "aligned_timers":
+        continue
+
+      template_file = "safari_"+template_file
+      with open(f"./driver_scripts_templates/{template_file}") as file_:
+        template = Template(file_.read())
+
+        # Generate for Safari
+        render("", template, template_file, "", meet_meeting_id)
+
+
 def generate_all(meet_meeting_id=None):
   shutil.rmtree("driver_scripts/", ignore_errors=True)
   os.makedirs("driver_scripts", exist_ok=True)
@@ -64,4 +69,8 @@ def generate_all(meet_meeting_id=None):
 
   # Copy the files that don't need any substitutions. 
   for script in ["idle", "prep_safari", "finder"]:
-      shutil.copyfile(f"./driver_scripts_templates/{script}.scpt", f"./driver_scripts/{script}.scpt")
+    shutil.copyfile(f"./driver_scripts_templates/{script}.scpt", f"./driver_scripts/{script}.scpt")
+
+
+if __name__== "__main__" :
+  generate_all()
