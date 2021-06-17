@@ -52,39 +52,38 @@ def add_category_from_any_frame(stack):
   return stack
 
 def post_process_dict(mode, stack_frames):
-    for row in stack_frames:
+    with open('samples/samples.collapsed.' + mode, 'w') as f:
+      for row in stack_frames:
+        # Filter out the frames we don't care about and all those under it.
+        if mode == "cpu_time":
+          row = shorten_stack(row)
 
-      # Filter out the frames we don't care about and all those under it.
-      if mode == "cpu_time":
-        row = shorten_stack(row)
+          # If nothing is left after filtering.
+          if not row:
+            continue
 
-        # If nothing is left after filtering.
-        if not row:
-          continue
+          row = add_category_from_any_frame(row)
 
-        row = add_category_from_any_frame(row)
+        # In the case of wakeups there are things we don't care about at all.
+        if mode == "wakeups":
+          drop_whole_stack = False
+          for i, frame in enumerate(row):
+            if any(skip_frame in frame for skip_frame in drop_frames_with):
+              drop_whole_stack = True
 
-      # In the case of wakeups there are things we don't care about at all.
-      if mode == "wakeups":
-        drop_whole_stack = False
+          if drop_whole_stack:
+            continue
+
+        # Drop parts of the function names that just add noise.  
         for i, frame in enumerate(row):
-          if any(skip_frame in frame for skip_frame in drop_frames_with):
-            drop_whole_stack = True
+          for token in tokens_to_remove:
+            row[i] = row[i].replace(token,"")
 
-        if drop_whole_stack:
-          continue
+        # Reform the line in stacked format.
+        count = row.pop()
+        line = ';'.join(row)
 
-      # Drop parts of the function names that just add noise.  
-      for i, frame in enumerate(row):
-        for token in tokens_to_remove:
-          row[i] = row[i].replace(token,"")
-
-      # Reform the line in stacked format.
-      count = row.pop()
-      line = ';'.join(row)
-
-      print(line + " " + count)
-
+        f.write(f"{line} {count}\n")
 
 def main(mode, stack_dir):
   counts = defaultdict(int)

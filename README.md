@@ -63,14 +63,12 @@ Parses and aggregates powermetrics results generated from benchmark.py --measure
 ./powermetrics_compare.py ./results
 ```
 
-## profile_generation/
-Parses and aggregates DTrace results generated from benchmark.py --profile into flamegraphs. 
-The scripts automatically generate an svg but also produce collapsed stack files that be opened in speedscope.app.
+## collapse.py/
+Parses and aggregates DTrace results generated from benchmark.py --profile. 
+The scripts produce collapsed stack files that be opened in speedscope.app.
 
-The scripts expect only the directory of the profile results (an absolute path is needed).
 ```
-./profile_generation/wakeups_dtrace.sh /home/git/chrome_safari_power/profile_results 
-./profile_generation/cpu_dtrace.sh /home/git/chrome_safari_power/profile_results 
+python3 ./collapse.py --mode cpu_time --stack_dir ./profile
 ```
 
 # More info
