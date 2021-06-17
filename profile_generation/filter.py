@@ -50,7 +50,7 @@ def add_category_from_any_frame(stack):
   return stack
 
 def main(mode, stack_file):
-  with open(stack_file, newline='') as csvfile:
+  with open(stack_file, newline='', encoding = "ISO-8859-1") as csvfile:
     csv_reader = csv.reader(csvfile, delimiter=';', quotechar='|')
     for row in csv_reader:
 

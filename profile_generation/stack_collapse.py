@@ -12,7 +12,7 @@ def main(stack_dir):
     for stack_file in files:
       if stack_file.endswith(".txt"):
 
-        with open(os.path.join(stack_dir, stack_file), newline='') as stack_file:
+        with open(os.path.join(stack_dir, stack_file), newline='', encoding = "ISO-8859-1") as stack_file:
           lines = stack_file.readlines()
           
           stack_frames = []
@@ -21,12 +21,22 @@ def main(stack_dir):
               if stack_frames:
                 count = stack_frames.pop()
 
-                line = ";".join(stack_frames)
-                counts[line] += int(count)
+                # Drop rare functions for easier flamegraph generation.
+                if int(count) > 2:
+                  stack_frames.reverse()
+                  line = ";".join(stack_frames)
+                  counts[line] += int(count)
 
                 stack_frames = []
             else:
-              stack_frames.append(line.strip())
+              stack_frame = line.strip()
+
+              # Remove offset
+              plus_index = stack_frame.find('+')
+              if plus_index != -1:
+                stack_frame = stack_frame[:plus_index]
+
+              stack_frames.append(stack_frame)
 
   for line, count in counts.items():
     print(line + " " + str(count))

@@ -140,4 +140,3 @@ battery_discharge.csv
 .DS_STORE
 
 driver_scripts/
-profile_generation/Flamegraph
