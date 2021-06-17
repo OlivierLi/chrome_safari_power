@@ -2,6 +2,8 @@
 
 import csv
 import argparse
+from collections import defaultdict
+import os
 
 # List of stacks we just want to drop to get nicer flames. Everything under them is dropped.
 ignored_frames = ["ThreadFunc", "ThreadControllerWithMessagePumpImpl::Do", "JobTask::Run", "base::RunLoop::Run", "base::Thread::Run", "RunWorker", "MessagePumpCFRunLoopBase", "::RunTask"]
@@ -49,10 +51,8 @@ def add_category_from_any_frame(stack):
 
   return stack
 
-def main(mode, stack_file):
-  with open(stack_file, newline='', encoding = "ISO-8859-1") as csvfile:
-    csv_reader = csv.reader(csvfile, delimiter=';', quotechar='|')
-    for row in csv_reader:
+def post_process_dict(mode, stack_frames):
+    for row in stack_frames:
 
       # Filter out the frames we don't care about and all those under it.
       if mode == "cpu_time":
@@ -70,6 +70,7 @@ def main(mode, stack_file):
         for i, frame in enumerate(row):
           if any(skip_frame in frame for skip_frame in drop_frames_with):
             drop_whole_stack = True
+
         if drop_whole_stack:
           continue
 
@@ -79,15 +80,59 @@ def main(mode, stack_file):
           row[i] = row[i].replace(token,"")
 
       # Reform the line in stacked format.
+      count = row.pop()
       line = ';'.join(row)
-      print(line)
+
+      print(line + " " + count)
+
+
+def main(mode, stack_dir):
+  counts = defaultdict(int)
+  rows = []
+
+  for root, dirs, files in os.walk(stack_dir):
+    for stack_file in files:
+      if stack_file.endswith(".txt"):
+
+        with open(os.path.join(stack_dir, stack_file), newline='', encoding = "ISO-8859-1") as stack_file:
+          lines = stack_file.readlines()
+          
+          stack_frames = []
+          for line in lines:
+            if not line.strip():
+              if stack_frames:
+                count = stack_frames.pop()
+
+                # Drop rare functions for easier flamegraph generation.
+                if int(count) > 2:
+                  stack_frames.reverse()
+                  line = ";".join(stack_frames)
+                  counts[line] += int(count)
+
+                stack_frames = []
+            else:
+              stack_frame = line.strip()
+
+              # Remove offset
+              plus_index = stack_frame.find('+')
+              if plus_index != -1:
+                stack_frame = stack_frame[:plus_index]
+
+              stack_frames.append(stack_frame)
+
+  for stack, count in counts.items():
+    row = stack.split(';')
+    row.append(str(count))
+    rows.append(row)
+
+  post_process_dict(mode, rows)
 
 
 if __name__== "__main__" :
   parser = argparse.ArgumentParser(description='Flip stack order of a collapsed stack file.')
-  parser.add_argument("--stack_file", help="Collapsed stack file.", required=True)
+  parser.add_argument("--stack_dir", help="Collapsed stack file.", required=True)
   parser.add_argument("--mode", help="Whether to filter for wakeups or cpu time.", required=True, choices=["clean_only", "cpu_time", "wakeups"])
   args = parser.parse_args()
 
-  main(args.mode, args.stack_file)
+  main(args.mode, args.stack_dir)
 
