@@ -65,7 +65,7 @@ Running benchmark.py in profile mode uses `dtrace` to analyse the chromium proce
 Use to execute different usage scenarios and measure their power use or profile them.
 ```
 ./benchmark.py ./results --measure 
-./benchmark.py ./profile --profile_mode cpu_time --chromium_executable=./bin/Chromium.app
+./benchmark.py ./profile --profile_mode cpu_time
 ```
 
 ## powermetrics_compare.py
