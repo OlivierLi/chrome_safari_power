@@ -11,6 +11,19 @@ The generated scripts can be used to have browsers go
 through scenarios in a repeatable way.
 """
 
+# For certain scenarios more than one driver script is generated. Return a list of tuple that describes them all.
+def get_render_targets(template_file, output_filename):
+  render_targets = [(output_filename ,"")]
+
+  # In the case of idle_on_site render for different sites.
+  if template_file.endswith("idle_on_site"):
+    idle_sites = ["http://www.wikipedia.com/wiki/Alessandro_Volta", "https://www.youtube.com/watch?v=9EE_ICC_wFw?autoplay=1"]
+    render_targets[0] = (output_filename.replace("site","wiki"),  idle_sites[0])
+    render_targets.append((output_filename.replace("site","youtube"),  idle_sites[1]))
+
+  return render_targets
+
+
 # Render a single scenario script.
 def render(file_prefix, template, template_file, process_name, meet_meeting_id=None):
   if file_prefix:
@@ -18,18 +31,9 @@ def render(file_prefix, template, template_file, process_name, meet_meeting_id=N
     file_prefix = file_prefix.lower()
 
     background_sites = '"google.com", "youtube.com","tmall.com","baidu.com","qq.com","sohu.com","amazon.com","taobao.com","facebook.com","360.cn","yahoo.com","jd.com","wikipedia.org","zoom.us","sina.com.cn","weibo.com","live.com","xinhuanet.com","reddit.com","microsoft.com","netflix.com","office.com","microsoftonline.com","okezone.com","vk.com","myshopify.com","panda.tv","alipay.com","csdn.net","instagram.com","zhanqi.tv","yahoo.co.jp","ebay.com","apple.com","bing.com","bongacams.com","google.com.hk","naver.com","stackoverflow.com","aliexpress.com","twitch.tv","amazon.co.jp","amazon.in","adobe.com","tianya.cn","huanqiu.com","aparat.com","amazonaws.com","twitter.com","yy.com"'
-    idle_sites = ["http://www.wikipedia.com/wiki/Alessandro_Volta", "https://www.youtube.com/watch?v=9EE_ICC_wFw?autoplay=1"]
+    output_filename = f"./driver_scripts/{file_prefix}{template_file}.scpt"
 
-    output_filename = "./driver_scripts/"+file_prefix+template_file+".scpt"
-
-    # Tuple of target with idle_site
-    render_targets = [(output_filename ,"wiki")]
-
-    if template_file.endswith("idle_on_site"):
-      render_targets[0] = (output_filename.replace("site","wiki"),  idle_sites[0])
-      render_targets.append((output_filename.replace("site","youtube"),  idle_sites[1]))
-
-    for render_target in render_targets:
+    for render_target in get_render_targets(template_file, output_filename):
       with open(render_target[0], 'w') as output:
         output.write(template.render(
           idle_site=render_target[1], 
@@ -43,31 +47,26 @@ def render(file_prefix, template, template_file, process_name, meet_meeting_id=N
 
 # Render all scenario driver scripts for all browsers (if applicable).
 def render_runner_scripts(meet_meeting_id=None):
-  template_files = ['open_background', 'idle_on_site', 'scroll', 'navigation', 'aligned_timers', 'zero_window']
 
   if meet_meeting_id != None:
     template_files.append('meet')
 
-  for template_file in template_files:
+  # Generate all driver scripts from templates.
+  for _, _, files in os.walk("./driver_scripts_templates"):
+    for template_file in files:
+      if not template_file.endswith(".scpt"):
 
-    with open("./driver_scripts_templates/"+template_file) as file_:
-      template = Template(file_.read())
+        with open("./driver_scripts_templates/"+template_file) as file_:
+          template = Template(file_.read())
 
-      # Generate for all Chromium based browsers
-      for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
-        process_name = utils.browsers_definition[browser]["process_name"]
-        render(browser, template, template_file, process_name, meet_meeting_id)
-
-      # Skip aligned timer case as chromium only
-      if template_file == "aligned_timers":
-        continue
-
-      template_file = "safari_"+template_file
-      with open(f"./driver_scripts_templates/{template_file}") as file_:
-        template = Template(file_.read())
-
-        # Generate for Safari
-        render("", template, template_file, "", meet_meeting_id)
+          if template_file.startswith("safari"):
+            # Generate for Safari
+            render("", template, template_file, "", meet_meeting_id)
+          else:
+            # Generate for all Chromium based browsers
+            for browser in ['Chrome', 'Canary', "Chromium", "Edge"]:
+              process_name = utils.browsers_definition[browser]["process_name"]
+              render(browser, template, template_file, process_name, meet_meeting_id)
 
 
 def generate_all(meet_meeting_id=None):
@@ -79,7 +78,7 @@ def generate_all(meet_meeting_id=None):
   render_runner_scripts(meet_meeting_id)
 
   # Copy the files that don't need any substitutions. 
-  for script in ["idle", "prep_safari", "finder"]:
+  for script in ["idle", "prep_safari"]:
     shutil.copyfile(f"./driver_scripts_templates/{script}.scpt", f"./driver_scripts/{script}.scpt")
 
 
