@@ -200,7 +200,7 @@ def main():
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
   # Generate the runner scripts
-  generate_scripts.generate_all(args.meet_meeting_id)
+  generate_scripts.generate_all({"meet_meeting_id" : args.meet_meeting_id})
 
   # Verify that we run in an environment condusive to proper profiling or measurments.
   try:
