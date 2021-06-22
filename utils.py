@@ -30,6 +30,7 @@ browsers_definition = {
   },
   "Chromium": {
     "process_name": "Chromium",
+    "executable": "Chromium",
     "identifier": "org.chromium.Chromium"
   },
   "Edge": {

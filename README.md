@@ -7,6 +7,17 @@ This repo contains tools that allow you to run different browsers under specific
 
 
 # Setting Up
+
+## Chromium build
+If measuring of profiling Chromium it needs to be built with the following args.gn and copied to the "Applications" folder.
+
+    use_goma = true
+    is_debug = false
+    is_component_build = false
+    symbol_level = 0
+    blink_symbol_level = 0
+    is_official_build = true
+
 ## Python Virtual Environment
 This project uses python [Virtual Environments](https://docs.python.org/3/tutorial/venv.html).
 

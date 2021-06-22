@@ -33,10 +33,8 @@ def RunScenario(scenario_config):
 
   if scenario_config.browser is not None:
     browser_executable = utils.browsers_definition[scenario_config.browser]['executable']
-    if scenario_config.browser in ["Chrome", "Canary", "Edge"]:
+    if scenario_config.browser in ["Chromium", "Chrome", "Canary", "Edge"]:
       subprocess.call(["open", "-a", browser_executable, "--args"] + ["--enable-benchmarking", "--disable-stack-profiler"] + scenario_config.extra_args)
-    elif scenario_config.browser == "Chromium":
-      subprocess.Popen([browser_executable, "--enable-benchmarking", "--disable-stack-profiler"] + scenario_config.extra_args)
     elif scenario_config.browser == "Safari":
       subprocess.call(["open", "-a", browser_executable])
       subprocess.call(["osascript", './driver_scripts/prep_safari.scpt'])
@@ -48,10 +46,6 @@ def RunScenario(scenario_config):
     while not FindBrowserProcess(browser_process_name):
       time.sleep(0.100)
       print(f"Waiting for {browser_process_name} to start")
-
-  # Wait for browser to be receptive to applescript commands which is not automatic if it was not started with "open".
-  # TODO: Actually try and ping pong AppleScript commands instead of just having a random wait.
-  time.sleep(5)
 
   if scenario_config.background_script is not None:
     subprocess.call(["osascript", f'./driver_scripts/{background_script}.scpt'])

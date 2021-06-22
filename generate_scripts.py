@@ -70,7 +70,7 @@ def render_runner_scripts(meet_meeting_id=None):
         render("", template, template_file, "", meet_meeting_id)
 
 
-def main(meet_meeting_id=None):
+def generate_all(meet_meeting_id=None):
   # Delete all existing generated scripts. Scripts should not be modified by hand.
   shutil.rmtree("driver_scripts/", ignore_errors=True)
   os.makedirs("driver_scripts", exist_ok=True)
@@ -84,4 +84,4 @@ def main(meet_meeting_id=None):
 
 
 if __name__== "__main__" :
-  main()
+  generate_all()
