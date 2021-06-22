@@ -1,6 +1,6 @@
 tell application "{{ browser }}" 
 
-    -- If Chromium is already started then just bring
+    -- If {{ browser }} is already started then just bring
     -- it to the forefront otherwise open it.
     if it is running then
       reopen

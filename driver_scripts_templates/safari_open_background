@@ -1,18 +1,21 @@
 tell application "Safari" 
+  -- If Safari is already started then just bring
+  -- it to the forefront otherwise open it.
+  if it is running then
+    reopen
+  else
+    activate
+  end if
 
-    if it is running then
-      activate
+  set sites to { {{ background_sites }} }
+  repeat with site in sites
+  open location site
 
-      set sites to { {{ background_sites }} }
-      repeat with site in sites
-        open location site
-        
-        repeat while document 1's source = ""
-          delay 0.5
-        end repeat
+  repeat while document 1's source = ""
+  delay 0.5
+  end repeat
 
-      end repeat
+  end repeat
 
-      activate
-    end if
+  activate
 end tell

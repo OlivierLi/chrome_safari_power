@@ -1,16 +1,21 @@
 set myURL to "https://meet.google.com/{{ meeting_id }}"
 
 tell application "Safari"
-    if it is running then
-        activate
-        delay 3
-        open location {myURL}
-        delay 3
+  -- If Safari is already started then just bring
+  -- it to the forefront otherwise open it.
+  if it is running then
+    reopen
+  else
+    activate
+  end if
 
-        tell document 1
-            do JavaScript "b=document.getElementsByClassName('uArJ5e UQuaGc Y5sE8d uyXBBb xKiqt')[0];b.click();"
-        end tell
+  delay 3
+  open location {myURL}
+  delay 3
 
-        delay 1800
-    end if
+  tell document 1
+  do JavaScript "b=document.getElementsByClassName('uArJ5e UQuaGc Y5sE8d uyXBBb xKiqt')[0];b.click();"
+  end tell
+
+  delay 1800
 end tell

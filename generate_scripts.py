@@ -31,21 +31,22 @@ def render(file_prefix, template, template_file, process_name, extra_args):
     file_prefix = file_prefix.replace(" ", "_") + "_"
     file_prefix = file_prefix.lower()
 
-    background_sites = '"google.com", "youtube.com","tmall.com","baidu.com","qq.com","sohu.com","amazon.com","taobao.com","facebook.com","360.cn","yahoo.com","jd.com","wikipedia.org","zoom.us","sina.com.cn","weibo.com","live.com","xinhuanet.com","reddit.com","microsoft.com","netflix.com","office.com","microsoftonline.com","okezone.com","vk.com","myshopify.com","panda.tv","alipay.com","csdn.net","instagram.com","zhanqi.tv","yahoo.co.jp","ebay.com","apple.com","bing.com","bongacams.com","google.com.hk","naver.com","stackoverflow.com","aliexpress.com","twitch.tv","amazon.co.jp","amazon.in","adobe.com","tianya.cn","huanqiu.com","aparat.com","amazonaws.com","twitter.com","yy.com"'
-    output_filename = f"./driver_scripts/{file_prefix}{template_file}.scpt"
+  background_sites = '"google.com", "youtube.com","tmall.com","baidu.com","qq.com","sohu.com","amazon.com","taobao.com","facebook.com","360.cn","yahoo.com","jd.com","wikipedia.org","zoom.us","sina.com.cn","weibo.com","live.com","xinhuanet.com","reddit.com","microsoft.com","netflix.com","office.com","microsoftonline.com","okezone.com","vk.com","myshopify.com","panda.tv","alipay.com","csdn.net","instagram.com","zhanqi.tv","yahoo.co.jp","ebay.com","apple.com","bing.com","bongacams.com","google.com.hk","naver.com","stackoverflow.com","aliexpress.com","twitch.tv","amazon.co.jp","amazon.in","adobe.com","tianya.cn","huanqiu.com","aparat.com","amazonaws.com","twitter.com","yy.com"'
+  output_filename = f"./driver_scripts/{file_prefix}{template_file}.scpt"
 
-    for render_target in get_render_targets(template_file, output_filename):
+  for render_target in get_render_targets(template_file, output_filename):
 
-      render_target = {**render_target, **extra_args}
+    render_target = {**render_target, **extra_args}
 
-      with open(render_target["output_filename"], 'w') as output:
-        output.write(template.render(
-          **render_target,
-          background_sites=background_sites, 
-          navigation_cycles=30, 
-          per_navigation_delay=30, 
-          delay=3600, 
-          browser=process_name))
+    with open(render_target["output_filename"], 'w') as output:
+      output.write(template.render(
+        **render_target,
+        directory = os.getcwd(),
+        background_sites=background_sites, 
+        navigation_cycles=30, 
+        per_navigation_delay=30, 
+        delay=3600, 
+        browser=process_name))
 
 
 # Render all scenario driver scripts for all browsers (if applicable).

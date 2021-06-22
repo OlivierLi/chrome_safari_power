@@ -1,12 +1,17 @@
 tell application "Safari" 
-    if it is running then
-      activate
-      set w to first window
+  -- If Safari is already started then just bring
+  -- it to the forefront otherwise open it.
+  if it is running then
+    reopen
+  else
+    activate
+  end if
 
-      set bounds of w to {0, 0, 1920, 1080}
+  set w to first window
 
-      delay {{ delay }}
+  set bounds of w to {0, 0, 1920, 1080}
 
-      activate
-    end if
+  delay {{ delay }}
+
+  activate
 end tell
