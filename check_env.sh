@@ -80,3 +80,5 @@ function CheckEnv()
   CheckProgramNotRunning "iTerm2" "Do not have a terminal opened. Use SSH.";
 
 }
+
+CheckEnv

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import argparse
 import os
@@ -204,7 +204,7 @@ def main():
 
   # Verify that we run in an environment condusive to proper profiling or measurments.
   try:
-    check_env = subprocess.run(['zsh', '-c', 'source ./check_env.sh && CheckEnv'], check=not args.no_checks, capture_output=True)
+    check_env = subprocess.run(['zsh', '-c', './check_env.sh'], check=not args.no_checks, capture_output=True)
     print("WARNING:", check_env.stdout.decode('ascii'))
   except subprocess.CalledProcessError as e:
     print("ERROR:", e.stdout.decode('ascii'))
