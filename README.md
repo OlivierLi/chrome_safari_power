@@ -82,6 +82,15 @@ The scripts produce collapsed stack files that be opened in speedscope.app.
 python3 ./collapse.py --mode cpu_time --stack_dir ./profile
 ```
 
+If desired the files can be processed into a pprof profile usable with a pprof server using instrumentsToPprof.
+
+```
+git clone https://github.com/OlivierLi/instrumentsToPprof.git
+cd instrumentsToPprof
+go build
+./instrumentsToPprof --format=collapsed --exclude-ids --exclude-process-from-stack --exclude-threads-from-stack ./samples.collapsed.cpu_time
+```
+
 # More info
 
 ## pages/
