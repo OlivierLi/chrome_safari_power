@@ -32,7 +32,7 @@ def RunScenario(scenario_config):
     scenario_config.extra_args = []
 
   if scenario_config.browser is not None:
-    browser_executable = utils.BROWSERS_DEFINITIONbrowsers_definition[scenario_config.browser]['executable']
+    browser_executable = utils.BROWSERS_DEFINITION[scenario_config.browser]['executable']
     if scenario_config.browser in ["Chromium", "Chrome", "Canary", "Edge"]:
       subprocess.call(["open", "-a", browser_executable, "--args"] + ["--enable-benchmarking", "--disable-stack-profiler"] + scenario_config.extra_args)
     elif scenario_config.browser == "Safari":
