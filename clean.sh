@@ -1,4 +1,4 @@
-set -eux
+set -x
 
 rm driver_scripts_templates
 rm utils.py
