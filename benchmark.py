@@ -13,7 +13,7 @@ import generate_scripts
 
 def KillBrowsers(browser_list):
   for browser in browser_list:
-    process_name = utils.browsers_definition[browser]['process_name']
+    process_name = utils.BROWSERS_DEFINITION[browser]['process_name']
     subprocess.call(["killall", "-9", process_name])
 
 def KillPowermetrics():
@@ -32,7 +32,7 @@ def RunScenario(scenario_config):
     scenario_config.extra_args = []
 
   if scenario_config.browser is not None:
-    browser_executable = utils.browsers_definition[scenario_config.browser]['executable']
+    browser_executable = utils.BROWSERS_DEFINITIONbrowsers_definition[scenario_config.browser]['executable']
     if scenario_config.browser in ["Chromium", "Chrome", "Canary", "Edge"]:
       subprocess.call(["open", "-a", browser_executable, "--args"] + ["--enable-benchmarking", "--disable-stack-profiler"] + scenario_config.extra_args)
     elif scenario_config.browser == "Safari":
@@ -42,7 +42,7 @@ def RunScenario(scenario_config):
 
   # Wait for the browser to be started before continuing on.
   if scenario_config.browser:
-    browser_process_name = utils.browsers_definition[scenario_config.browser]['process_name']
+    browser_process_name = utils.BROWSERS_DEFINITION[scenario_config.browser]['process_name']
     while not FindBrowserProcess(browser_process_name):
       time.sleep(0.100)
       print(f"Waiting for {browser_process_name} to start")
@@ -103,7 +103,7 @@ def Profile(scenario_config, output_dir, dry_run, profile_mode):
     exit(-1)
 
   script_process = RunScenario(scenario_config)
-  browser_process = FindBrowserProcess(utils.browsers_definition[scenario_config.browser]['process_name'])
+  browser_process = FindBrowserProcess(utils.BROWSERS_DEFINITION[scenario_config.browser]['process_name'])
 
   # Set up the environment for correct dtrace execution.
   my_env = os.environ.copy()
@@ -155,7 +155,7 @@ class ScenarioConfig:
     self.extra_args = extra_args
     self.background_script = background_script
 
-    if browser == "Chromium" and "executable" not in utils.browsers_definition["Chromium"].keys():
+    if browser == "Chromium" and "executable" not in utils.BROWSERS_DEFINITION["Chromium"].keys():
         print("Cannot run a Chromium scenario without the executable defined")
         exit(-1)
 
@@ -192,15 +192,19 @@ def main():
       exit(-1)
 
   if args.chromium_executable:
-      utils.browsers_definition["Chromium"]["executable"] = args.chromium_executable
+      utils.BROWSERS_DEFINITION["Chromium"]["executable"] = args.chromium_executable
 
   # Start by making sure that no browsers are running which would affect the test.
-  KillBrowsers(utils.browsers_definition.keys())
+  KillBrowsers(utils.BROWSERS_DEFINITION.keys())
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
   # Generate the runner scripts
-  generate_scripts.generate_all({"meet_meeting_id" : args.meet_meeting_id})
+  extra_args = {"hash_bang": "#!/usr/bin/osascript"}
+  if args.meet_meeting_id:
+    extra_args["meeting_id"] = args.meet_meeting_id
+
+  generate_scripts.generate_all(extra_args)
 
   # Verify that we run in an environment condusive to proper profiling or measurments.
   try:
@@ -211,7 +215,7 @@ def main():
     return
 
   # Start by making sure that no browsers are running which would affect the test.
-  KillBrowsers(utils.browsers_definition.keys())
+  KillBrowsers(utils.BROWSERS_DEFINITION.keys())
   KillPowermetrics()
   os.makedirs(f"{args.output_dir}", exist_ok=True)
 
