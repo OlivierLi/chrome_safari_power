@@ -1,3 +1,13 @@
+# WARNING!
+
+This repo has begun being migrated to chromium/src.
+
+To symlink all the files needed to run the scripts found here run:
+
+```
+./link.sh $CHROMIUM_SRC_DIR
+```
+
 # What is this repo?
 
 This repo contains tools that allow you to run different browsers under specific usage scenarios and:
