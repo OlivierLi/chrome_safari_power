@@ -140,3 +140,10 @@ battery_discharge.csv
 .DS_STORE
 
 driver_scripts/
+
+# Things that are now pulled from chromium/src
+driver_scripts_templates/
+macros
+utils.py
+generate_scripts.py
+pages
